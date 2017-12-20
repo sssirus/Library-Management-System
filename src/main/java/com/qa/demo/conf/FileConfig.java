@@ -109,5 +109,6 @@ public class FileConfig {
 
     //设置TDB文件的位置；
     public static final String TDB = "src\\main\\resources\\data\\kbfile\\TDB";
-
+    //供TDB读取RDF的文件位置；
+    public static final String TDB_RDF = "src/main/resources/data/kbfile/NT_triplets.nt";
 }
