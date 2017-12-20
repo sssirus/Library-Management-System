@@ -29,4 +29,9 @@ public interface TDBCrudDriver {
     void removeTriplet
     (String modelName, String subject, String predicate, String object);
 
+    /**
+     * 新建TDB的model；
+     */
+    void loadTDBModel();
+
 }

@@ -6,6 +6,8 @@ import com.qa.demo.dataStructure.Answer;
 import com.qa.demo.dataStructure.DataSource;
 import com.qa.demo.dataStructure.Question;
 import com.qa.demo.dataStructure.Triplet;
+import com.qa.demo.ontologyProcess.TDBCrudDriver;
+import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
 import com.qa.demo.query.ALGQuerySynonymKBQA;
 import com.qa.demo.query.ESQuerySynonymKBQA;
 import com.qa.demo.query.KbqaQueryDriver;
@@ -32,7 +34,11 @@ public class KBQADemo {
     public static void main(String[] args) throws IOException {
 
         IndexFile.indexFaqData(DataSource.SYNONYM);
-        LOG.info("[info]已建立faq索引，系统初始化完成");
+        LOG.info(" [info]已建立faq索引！");
+
+        TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
+        tdbCrudDriver.loadTDBModel();
+        LOG.info(" [info]已建立TDB MODEL，系统初始化完成！");
 
         //解决“Comparison method violates its general contract!”的BUG；
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");

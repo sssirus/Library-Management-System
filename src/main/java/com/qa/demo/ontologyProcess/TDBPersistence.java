@@ -83,10 +83,10 @@ public class TDBPersistence {
                 LOG.info(modelName + "：已有该model，不需要覆盖！");
                 break;
             case 2:
-                LOG.info(modelName + "：已有该model，需要覆盖原TDB文件！");
+                LOG.info(modelName + "：已有该model，覆盖原TDB文件，并建立model！");
                 break;
             case 3:
-                LOG.info(modelName + "：建立新的TDB文件！");
+                LOG.info(modelName + "：建立新的TDB model！");
                 break;
         }
     }

@@ -9,6 +9,10 @@ import org.nlpcn.commons.lang.util.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.qa.demo.conf.Configuration.TDB_MODEL_NAME;
+import static com.qa.demo.conf.FileConfig.TDB;
+import static com.qa.demo.conf.FileConfig.TDB_RDF;
+
 /**
  * Created time: 2017_12_09
  * Author: Devin Hua
@@ -83,5 +87,28 @@ public class TDBCrudDriverImpl implements TDBCrudDriver {
         //如果TDB中没有当前model；
         else
             LOG.warn(modelName + " 不存在，不执行删除操作！");
+    }
+
+    @Override
+    public void loadTDBModel() {
+
+        //TDB数据文件夹地址；
+        String TDBPath = TDB;
+
+        //在Dataset中存放model的名字；
+        String modelName = TDB_MODEL_NAME;
+
+        //表示若有同名model，是否需要覆盖；
+        Boolean flag = false;
+
+        //rdf三元组文件的路径；
+        String rdfPathName = TDB_RDF;
+        TDBPersistence tdbPersistence = new TDBPersistence(TDBPath);
+
+        //建立对象；
+        tdbPersistence.loadModel(modelName, rdfPathName, flag);
+
+        //事务完成后必须关闭Dataset；
+        tdbPersistence.closeTDB();
     }
 }

@@ -5,6 +5,8 @@ import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.DataSource;
 import com.qa.demo.dataStructure.QueryTuple;
 import com.qa.demo.dataStructure.Question;
+import com.qa.demo.ontologyProcess.TDBCrudDriver;
+import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
 import com.qa.demo.query.*;
 import com.qa.demo.questionAnalysis.Segmentation;
 import com.qa.demo.utils.es.IndexFile;
@@ -42,7 +44,11 @@ public class FaqDemo {
 //      IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN, DataSource.FAQ_T);
         IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN);
 //      IndexFile.indexFaqData(DataSource.FAQ);
-        LOG.info(" [info]已建立faq索引，系统初始化完成");
+        LOG.info(" [info]已建立faq索引！");
+
+        TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
+        tdbCrudDriver.loadTDBModel();
+        LOG.info(" [info]已建立TDB MODEL，系统初始化完成！");
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入问题，换行表示输入下一题，‘#’结束");

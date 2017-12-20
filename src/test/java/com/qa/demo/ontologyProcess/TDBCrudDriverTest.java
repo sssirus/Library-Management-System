@@ -10,6 +10,12 @@ import static com.qa.demo.conf.Configuration.TDB_MODEL_NAME;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TDBCrudDriverTest {
+    @Test
+    void loadTDBModel() {
+
+        TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
+        tdbCrudDriver.loadTDBModel();
+    }
 
     @Test
     void addTriplet() {
@@ -32,8 +38,12 @@ class TDBCrudDriverTest {
         String object = null;
         TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
         List<Statement> list = tdbCrudDriver.getTriplet(null, subject, predicate, object);
-        for (Statement s : list) {
-            System.out.println(s);
+        if(list.size()==0)
+            System.out.println("没有相关三元组！");
+        else {
+            for (Statement s : list) {
+                System.out.println(s);
+            }
         }
     }
 

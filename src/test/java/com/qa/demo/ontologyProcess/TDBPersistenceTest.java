@@ -10,6 +10,7 @@ import java.util.List;
 
 import static com.qa.demo.conf.Configuration.TDB_MODEL_NAME;
 import static com.qa.demo.conf.FileConfig.TDB;
+import static com.qa.demo.conf.FileConfig.TDB_RDF;
 
 class TDBPersistenceTest {
 
@@ -65,11 +66,11 @@ class TDBPersistenceTest {
         //TDB数据文件夹地址；
         String TDBPath = TDB;
         //在Dataset中存放model的名字；
-        String modelName = "TDB_agriculture";
+        String modelName = TDB_MODEL_NAME;
         //表示若有同名model，是否需要覆盖；
         Boolean flag = true;
-        //rdf三元组文件的绝对路径（注意：写相对路径会报错）；
-        String rdfPathName = "E:\\demo\\src\\main\\resources\\data\\kbfile\\NT_triplets.nt";
+        //rdf三元组文件的绝对路径；
+        String rdfPathName = TDB_RDF;
         TDBPersistence tdbPersistence = new TDBPersistence(FileConfig.TDB);
         //建立对象；
         tdbPersistence.loadModel(modelName, rdfPathName, flag);
