@@ -1,0 +1,69 @@
+.jumbotron
+{
+    background-color: transparent;
+}
+#content
+{
+    width:500px;
+    height: 500px;
+}
+
+input {
+    display: block;
+    font-size: 14px;
+    width:240px;
+    margin: 10px auto;
+    padding: 10px 8px 10px 8px;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0, .55), 0px 1px 1px rgba(255,255,255,.5);
+    border: 1px solid #666;
+}
+
+input {
+    opacity: 0.5;
+}
+
+input:hover,
+input:focus {
+    opacity: .7;
+    color:#08c;
+    border: 1px solid #08c;
+    box-shadow: 0px 1px 0px rgba(255,255,255,.25),inset 0px 3px 6px rgba(0,0,0,.25);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    box-shadow: inset 0 1px 2px rgba(255,255,255, .35), 0px 1px 15px rgba(0,246,255,.5);
+    border: 1px solid #08c;
+    outline: none;
+}
+
+button {
+    appearance: none;
+    opacity: .99;
+    width:100px;
+    height: 40px;
+    background: #08c;
+    box-shadow: inset 0 1px 2px rgba(255,255,255, .35), 0px 1px 6px rgba(0,246,255,.5);
+    border: 1px solid #0a5378;
+    border-radius: 4px;
+    color: #eee;
+    cursor: pointer;
+    text-shadow:0px -1px 0px rgba(0,0,0,.5);
+}
+
+button:hover {
+    background: #08c;
+    width:120px;
+    border: 1px solid #42bdbc;
+    border-radius: 3px;
+    box-shadow: inset 0px 3px 16px rgba(0,0,0,.25),0px 1px 10px rgba(255,255,255,.5),inset 0px -1px 2px rgba(255,255,255,.35);
+    text-shadow:0px 1px 1px rgba(0,0,0,.65);
+    -webkit-transition: all 0.40s ease-out;
+    transition: all 0.40s ease-out;
+}
+
+#answer
+{
+    width: 300%;
+}
