@@ -10,11 +10,17 @@ public class Question {
     //表示问题字符串，例如“水稻的天敌是什么？”;
     private String questionString;
 
+    //表示问句的意图,例如“大白菜分布在哪儿”中的“在哪儿”对应用户意图where
+    private  String qustionIntention="what";
+
     //分词之后的word列表;
     private HashMap<Entity,ArrayList<String>> questionToken;
 
     //分词之后的word词性列表，可能一个词对应两个及以上的词性;
     private List<Map<String,String>> questionTokenPOS;
+
+    //分词之后的每个实体对应的属性
+    private HashMap<Entity,List<Map<String,String>>> questionEntityPOS;
 
     //问题包含的实体列表;
     private List<Entity> questionEntity;
@@ -51,6 +57,12 @@ public class Question {
         this.questionString = questionString;
     }
 
+    public String getQuestionIntention() {
+        return qustionIntention;
+    }
+
+    public  void setQustionIntention(String qustionIntention){this.qustionIntention= qustionIntention;}
+
     public HashMap<Entity,ArrayList<String>> getQuestionToken() {
         return questionToken;
     }
@@ -77,6 +89,24 @@ public class Question {
 
     public void setQuestionTokenPOS(List<Map<String, String>> questionTokenPOS) {
         this.questionTokenPOS = questionTokenPOS;
+    }
+
+    public HashMap<Entity,List<Map<String,String>>> getQuestionEntityPOS(){return questionEntityPOS;}
+
+    public void setQuestionEntityPOS(HashMap<Entity,List<Map<String,String>>> map) {
+        this.questionEntityPOS = new HashMap<>();
+        Iterator iterator = map.entrySet().iterator();
+        while(iterator.hasNext())
+        {
+            Map.Entry<Entity,List<Map<String,String>>> entry = (Map.Entry) iterator.next();
+            Entity entity = new Entity(entry.getKey());
+            List<Map<String,String>> list = new ArrayList<>();
+            for(Map<String,String> s : entry.getValue())
+            {
+                list.add(s);
+            }
+            this.questionEntityPOS.put(entity, list);
+        }
     }
 
     public List<Entity> getQuestionEntity() {

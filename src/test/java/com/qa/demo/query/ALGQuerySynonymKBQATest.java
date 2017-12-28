@@ -1,7 +1,10 @@
 package com.qa.demo.query;
 
+import com.qa.demo.dataStructure.Answer;
 import com.qa.demo.dataStructure.Question;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,7 +13,8 @@ class ALGQuerySynonymKBQATest {
     void kbQueryAnswers() {
 
         Question question=new Question();
-        String string="花生什么时候种植?";
+        //String string="花生什么时候种植?";
+        String string="王绶是哪个民族的";  //民族 n
 
         question.setQuestionString(string);
 
@@ -19,6 +23,13 @@ class ALGQuerySynonymKBQATest {
         question = ALGQuerySynonymKBQADriver.kbQueryAnswers(question);
 
         question.printQuestionToken();
+
+        List<Answer> answers= question.getCandidateAnswer();
+        System.out.println("The answer is :");
+        for(Answer ans: answers)
+        {
+            System.out.println(ans.getAnswerString());
+        }
 
     }
 
