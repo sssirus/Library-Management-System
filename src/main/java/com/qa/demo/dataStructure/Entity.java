@@ -62,4 +62,23 @@ public class Entity {
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
+
+    @Override
+    public int hashCode() {
+        return entityURI.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if ( !(o instanceof Entity) )
+            return false;
+        else {
+            Entity e = (Entity) o;
+            return e.entityURI.equals(entityURI);
+        }
+    }
+
+
+
+
 }

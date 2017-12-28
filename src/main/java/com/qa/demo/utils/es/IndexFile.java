@@ -117,7 +117,7 @@ public class IndexFile {
                 .startObject()
                 .startObject("settings")
                 .field("number_of_shards", 1) //设置分片的数量
-                .field("number_of_replicas", 0) //设置副本数量
+                .field("number_of_replicas", 1) //设置副本数量
                 .endObject()
                 .startObject("mappings")
                 .startObject(typeFaq) // type名称
@@ -161,7 +161,7 @@ public class IndexFile {
                 .startObject()
                 .startObject("settings")
                 .field("number_of_shards", 1) //设置分片的数量
-                .field("number_of_replicas", 0) //设置副本数量
+                .field("number_of_replicas", 1) //设置副本数量
                 .endObject()
                 .startObject("mappings")
                 .startObject(typeFaq) // type名称
@@ -205,7 +205,7 @@ public class IndexFile {
                 .startObject()
                 .startObject("settings")
                 .field("number_of_shards", 1) //设置分片的数量
-                .field("number_of_replicas", 0) //设置副本数量
+                .field("number_of_replicas", 1) //设置副本数量
                 .endObject()
                 .startObject("mappings")
                 .startObject(typeFaq) // type名称
@@ -249,7 +249,7 @@ public class IndexFile {
                 .startObject()
                 .startObject("settings")
                 .field("number_of_shards", 1) //设置分片的数量
-                .field("number_of_replicas", 0) //设置副本数量
+                .field("number_of_replicas", 1) //设置副本数量
                 .endObject()
                 .startObject("mappings")
                 .startObject(typeFaq) // type名称
@@ -451,7 +451,7 @@ public class IndexFile {
                     type = Configuration.ES_TYPE_ENCYCLOPEDIA;
                     break;
                 default:
-                    filePath = FileConfig.FILE_FAQ;
+                    filePath = FileConfig.ENCYCLOPEDIA;
                     type = Configuration.ES_TYPE_ENCYCLOPEDIA;
             }
 
