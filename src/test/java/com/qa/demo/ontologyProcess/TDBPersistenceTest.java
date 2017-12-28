@@ -55,7 +55,7 @@ class TDBPersistenceTest {
 
         String TDBPath = TDB;
         String modelName = "TDB_agriculture";
-        TDBPersistence tdbPersistence = new TDBPersistence(FileConfig.TDB);
+        TDBPersistence tdbPersistence = new TDBPersistence(TDBPath);
         tdbPersistence.removeModel(modelName);
         tdbPersistence.closeTDB();
     }
@@ -68,10 +68,10 @@ class TDBPersistenceTest {
         //在Dataset中存放model的名字；
         String modelName = TDB_MODEL_NAME;
         //表示若有同名model，是否需要覆盖；
-        Boolean flag = true;
+        Boolean flag = false;
         //rdf三元组文件的绝对路径；
         String rdfPathName = TDB_RDF;
-        TDBPersistence tdbPersistence = new TDBPersistence(FileConfig.TDB);
+        TDBPersistence tdbPersistence = new TDBPersistence(TDBPath);
         //建立对象；
         tdbPersistence.loadModel(modelName, rdfPathName, flag);
         //事务完成后必须关闭Dataset；

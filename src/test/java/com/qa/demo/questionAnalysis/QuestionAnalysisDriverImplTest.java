@@ -14,6 +14,7 @@ class QuestionAnalysisDriverImplTest {
         question.setQuestionString(string);
 
         QuestionAnalysisDriver qAnalysisDriver=new QuestionAnalysisDriverImpl();
+        question = qAnalysisDriver.nerQuestion(question);
         question = qAnalysisDriver.segmentationQuestion(question);
         question.printQuestionToken();
     }
