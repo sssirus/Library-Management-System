@@ -120,6 +120,7 @@ public class ALGQuerySynonymKBQA  implements KbqaQueryDriver {
             String predicatename = entry.getKey();
             HashSet<String> synonyms = entry.getValue();
             double coOccurrenceScore = _coOccurrence(tokens, synonyms);
+            //double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
             if(coOccurrenceScore>0)
             {
                 String templateString = "";
@@ -157,6 +158,23 @@ public class ALGQuerySynonymKBQA  implements KbqaQueryDriver {
                 co_occurrence_count++;
         }
         return (co_occurrence_count/(double)(tokens.size()));
+    }
+
+    private double _coOccurrenceNew(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms)
+    {
+        if(tokens.isEmpty()||tokens.size()==0)
+            return 0;
+        else if(synonyms.isEmpty()||synonyms.size()==0)
+            return 0;
+        else if(tokens.size()==1&&tokens.get(0).equalsIgnoreCase(predicatename))  //直接与原谓词匹配
+            return 1.0;
+        double co_occurrence_count = 0;
+        for(String temp : tokens)
+        {
+            if(synonyms.contains(temp))
+                co_occurrence_count++;
+        }
+        return (co_occurrence_count/(double)(tokens.size()))-0.01;  //一般来说，近似的值，相似度不应该为1
     }
 
 }

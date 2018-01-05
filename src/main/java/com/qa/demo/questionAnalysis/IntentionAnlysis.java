@@ -9,6 +9,12 @@ import org.nlpcn.commons.lang.tire.library.Library;
 
 import java.util.HashMap;
 
+/**
+ *  Created time: 2017_12_27
+ *  Author: Weizhuo Li
+ *  Function description:
+ *  To analysis the user intention of query and return the predefined intention.
+ */
 public class IntentionAnlysis {
     //存储Intention的列表
     private static HashMap<String,Integer> intentionList;

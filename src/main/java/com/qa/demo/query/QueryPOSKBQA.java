@@ -26,7 +26,8 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
         q = qAnalysisDriver.nerQuestion(q);
         q = qAnalysisDriver.segmentationQuestionPOS(q); //会识别出用户意图以及解析出词性
         q = this.patternExtractQuestion(q);
-        q = GetCandidateAnswers.getCandidateAnswers(q, DataSource.SYNONYM);
+        //q = GetCandidateAnswers.getCandidateAnswers(q, DataSource.SYNONYM);  //不需要对答案约束，时间开销低
+        q = GetCandidateAnswers.getCandidateAnswersWithIntention(q, DataSource.SYNONYM); //由于又要对答案进行一些词性判别，时间开销较高
         return q;
     }
 
@@ -38,62 +39,6 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
         return q;
     }
 
-   /* private ArrayList<QueryTuple> patternMatch(Question q) {
-
-        ArrayList<QueryTuple> tuples = new ArrayList<>();
-        //没有实体的情况，元组返回为空
-        if (q.getQuestionEntity().isEmpty() || q.getQuestionEntity() == null
-                || q.getQuestionToken().size()==0 || q.getQuestionToken().isEmpty())
-            return tuples;
-
-        List<Entity> questionEntity =q.getQuestionEntity();
-
-        int tokenSize=q.getQuestionTokenPOS().size();
-        String intetion=q.getQuestionIntention();
-        if(tokenSize==0&&intetion.equalsIgnoreCase("what")) //没有tokens的情况
-        {
-            for(Entity subject_entity:questionEntity)
-            {
-                Predicate p = new Predicate();
-                p.setKgPredicateName("描述");
-                QueryTuple tuple = new QueryTuple();
-                QuestionTemplate qTemplate = new QuestionTemplate();
-                qTemplate.setPredicate(p);
-                qTemplate.setTemplateString("描述");
-                tuple.setTemplate(qTemplate);
-                tuple.setSubjectEntity(subject_entity);
-                tuple.setPredicate(qTemplate.getPredicate());
-                tuple.setTupleScore(0.5);
-                tuples.add(tuple);
-
-                p = new Predicate();
-                p.setKgPredicateName("简介");
-                tuple = new QueryTuple();
-                qTemplate = new QuestionTemplate();
-                qTemplate.setPredicate(p);
-                qTemplate.setTemplateString("简介");
-                tuple.setTemplate(qTemplate);
-                tuple.setSubjectEntity(subject_entity);
-                tuple.setPredicate(qTemplate.getPredicate());
-                tuple.setTupleScore(0.5);
-                tuples.add(tuple);
-            }
-        }
-        else {
-
-            for(Entity subject_entity:questionEntity) {
-                List<QueryTuple> ts = _searchTemplate(subject_entity, q.getQuestionTokenPOS(), intetion);
-                for(QueryTuple t : ts)
-                {
-                    tuples.add(t);
-                }
-            }
-        }
-
-        if(tuples.size()>0)
-            tuples = RerankQueryTuple.rankTuples(tuples);
-        return tuples;
-    }*/
 
     private ArrayList<QueryTuple> patternMatch(Question q) {
 
@@ -104,8 +49,6 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
             return tuples;
 
         //List<Entity> questionEntity =q.getQuestionEntity();
-
-
         for(Entity subject_entity:q.getQuestionToken().keySet())
         {
             List<String> tokens = q.getQuestionToken().get(subject_entity);
@@ -159,19 +102,22 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
         List<String>  adjectiveSet=new ArrayList<String>();
 
         //根据词性来进行划分tokens的集合
+        List<String>  leftTokens=new ArrayList<String>();
+
         for(Map<String,String> pair:questionTokenPOS)
         {
-            for(String token:pair.keySet())
-            {
+            for(String token:pair.keySet()) {
                 String POS = pair.get(token);
-                if(POS.equalsIgnoreCase("n")||POS.equalsIgnoreCase("nr")) {
+                if (POS.equalsIgnoreCase("n") || POS.equalsIgnoreCase("nr")) {
                     nounSet.add(token);
-                }
-                else if(POS.equalsIgnoreCase("v")||POS.equalsIgnoreCase("vg")||POS.equalsIgnoreCase("vn")) {
+                } else if (POS.equalsIgnoreCase("v") || POS.equalsIgnoreCase("vg") || POS.equalsIgnoreCase("vn")) {
                     predicateSet.add(token);
-                }
-                else if(POS.equalsIgnoreCase("adj")) {
+                } else if (POS.equalsIgnoreCase("adj")) {
                     adjectiveSet.add(token);
+                } else if (POS.equalsIgnoreCase("en")) {  //考虑英文问句的情况
+                    nounSet.add(token);
+                } else{ //剩余的情况
+                    leftTokens.add(token);
                 }
                 //可以把它们专门作为名词来看待
             }
@@ -192,6 +138,7 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
                     predicatetokens.add(noun);
                     flag=true;
                 };
+
                 if(!flag) {//修饰的名词如果没有，加入缺省的名词
                     predicatetokens.add("地方");
                     predicatetokens.add("哪里");
@@ -289,6 +236,9 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
                     predicatetokens.add(predicate);
                 };
                 //缺省的情况
+                if(!leftTokens.isEmpty()){
+                    predicatetokens.addAll(leftTokens);
+                }
                 if(predicatetokens.isEmpty()) {
                     predicatetokens.add("简介");
                     predicatetokens.add("描述");
@@ -307,7 +257,7 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
             Map.Entry<String, HashSet<String>> entry = (Map.Entry) (it.next());
             String predicatename = entry.getKey();
             HashSet<String> synonyms = entry.getValue();
-            double coOccurrenceScore = _coOccurrence(predicatetokens, synonyms);
+            double coOccurrenceScore = _coOccurrenceNew(predicatetokens,predicatename,synonyms);
             if(coOccurrenceScore>0)
             {
                 String templateString = "";
@@ -344,9 +294,25 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
             if(synonyms.contains(temp))
                 co_occurrence_count++;
         }
-        return (co_occurrence_count/(double)(tokens.size()));
+        return (co_occurrence_count/(double)(tokens.size()));  //一般来说，近似的值，相似度不应该为1
     }
 
-
+    //找到tokens和synonyms中有多少共现词并计算相似度；进一步区分的相似度
+    private double _coOccurrenceNew(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms)
+    {
+        if(tokens.isEmpty()||tokens.size()==0)
+            return 0;
+        else if(synonyms.isEmpty()||synonyms.size()==0)
+            return 0;
+        else if(tokens.size()==1&&tokens.get(0).equalsIgnoreCase(predicatename))  //直接与原谓词匹配
+            return 1.0;
+        double co_occurrence_count = 0;
+        for(String temp : tokens)
+        {
+            if(synonyms.contains(temp))
+                co_occurrence_count++;
+        }
+        return (co_occurrence_count/(double)(tokens.size()))-0.01;  //一般来说，近似的值，相似度不应该为1
+    }
 
 }
