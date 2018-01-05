@@ -5,6 +5,7 @@ import com.qa.demo.dataStructure.*;
 import com.qa.demo.ontologyProcess.TDBCrudDriver;
 import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
 import com.qa.demo.questionAnalysis.Segmentation;
+import com.qa.demo.utils.NT_TRIPLE.AG;
 import com.qa.demo.utils.kgprocess.KGTripletsClient;
 
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class GetCandidateAnswers {
     }
 
     private static ArrayList<Answer> _getTDBCandidateAnswers(Question q, DataSource p) {
-
+        System.out.println("_getTDBCandidateAnswers");
         ArrayList<Answer> answers = new ArrayList<>();
         ArrayList<QueryTuple> tuples = q.getQueryTuples();
         if (tuples.isEmpty() || tuples == null)
@@ -99,6 +100,7 @@ public class GetCandidateAnswers {
         {
             String subject_uri = tuple.getSubjectEntity().getEntityURI();
             String predicate_uri = "";
+            System.out.println(tuple.getSubjectEntity().getEntityURI());
             if(subject_uri.contains("zhwiki"))
                 predicate_uri = Configuration.PREDICATE_PREFIX_WIKI + tuple.getPredicate().getKgPredicateName();
             else if(subject_uri.contains("hudongbaike"))
@@ -129,6 +131,61 @@ public class GetCandidateAnswers {
             }
         }
         return answers;
+    }
+
+    /**
+     * create by j.y.zhang
+     * getCandidateAnswers from allgregrograph
+     * @param q
+     * @param p
+     * @return
+     */
+    private static ArrayList<Answer> _getAllgregraphCandidateAnswers(Question q, DataSource p){
+        System.out.println("_getAllgregraphCandidateAnswers");
+        ArrayList<Answer> answers = new ArrayList<>();
+        ArrayList<QueryTuple> tuples = q.getQueryTuples();
+        if (tuples.isEmpty() || tuples == null)
+            return answers;
+        for (QueryTuple tuple : tuples)
+        {
+            String subject_uri = tuple.getSubjectEntity().getEntityURI();
+            String predicate_uri = "";
+            if(subject_uri.contains("zhwiki"))
+                predicate_uri = Configuration.PREDICATE_PREFIX_WIKI + tuple.getPredicate().getKgPredicateName();
+            else if(subject_uri.contains("hudongbaike"))
+                predicate_uri = Configuration.PREDICATE_PREFIX_HUDONG + tuple.getPredicate().getKgPredicateName();
+            else if(subject_uri.contains("baidubaike"))
+                predicate_uri = Configuration.PREDICATE_PREFIX_BAIDU + tuple.getPredicate().getKgPredicateName();
+            else if(subject_uri.contains("caas"))
+                predicate_uri = Configuration.PREDICATE_PREFIX_CAAS + tuple.getPredicate().getKgPredicateName();
+            else
+                continue;
+            ArrayList<String> objects = null;
+            try {
+                objects = AG.queryObject(subject_uri, predicate_uri);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            for (String object : objects)
+            {
+                Answer answer = new Answer();
+                answer.setAnswerString(object);
+                ArrayList<Triplet> answertriplets = new ArrayList<>();
+                Triplet triplet = new Triplet();
+                triplet.setSubjectURI(tuple.getSubjectEntity().getEntityURI());
+                triplet.setSubjectName(tuple.getSubjectEntity().getKgEntityName());
+                triplet.setPredicateURI(predicate_uri);
+                triplet.setPredicateName(tuple.getPredicate().getKgPredicateName());
+                triplet.setObjectName(object);
+                answertriplets.add(triplet);
+                answer.setAnswerTriplet(answertriplets);
+                answer.setAnswerScore(tuple.getTupleScore());
+                answer.setAnswerSource(p.toString());
+                answers.add(answer);
+            }
+        }
+        return answers;
+
     }
 
     public static Question getCandidateAnswers(Question q, DataSource p)
