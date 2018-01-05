@@ -223,33 +223,41 @@ public class AG {
      * 参数：主语，谓语
      * return ArrayList<Value> 宾语列表
      */
-    public  static ArrayList<Value> queryObject(String subject, String predicate) throws Exception{
+    public  static ArrayList<String> queryObject(String subjectUri, String predicateUri) throws Exception{
         AGRepositoryConnection conn = createConnection(false);
         ValueFactory f = conn.getValueFactory();
 
-        String exns = "http://zhishi.me/baidubaike/resource/";
-        String exns2 = "http://zhishi.me/baidubaike/property/";
+        String[] subjectlist = subjectUri.split("/");
+        String[] predicatelist = predicateUri.split("/");
 
+        String exns = "";//http://zhishi.me/baidubaike/resource/";
+        for (int i = 0; i < subjectlist.length-1;i++){
+            exns += subjectlist[i] + "/";
+        }
+        String exns2 = "";//"http://zhishi.me/baidubaike/property/";
+        for (int j = 0; j < predicatelist.length-1;j++){
+            exns2 += predicatelist[j] + "/";
+        }
         conn.setNamespace("resource", exns);
         conn.setNamespace("property",exns2);
-        // Check triples
-        //println("\nListing all triples.");
-        //RepositoryResult<Statement> statements = conn.getStatements(null, null, null, false);
-        //printRows(statements);
+
+        String subject = subjectlist[subjectlist.length-1];
+        String predicate = predicatelist[predicatelist.length-1];
 
         String queryFillter = "((?s = resource:"+subject+") && (?p = property:"+predicate+"))";
         String queryString = "SELECT ?s ?p ?o WHERE { ?s ?p ?o . FILTER "+queryFillter+"  }";
+        //println(queryString);
         //String queryString = "SELECT ?s ?p ?o WHERE { ?s ?p ?o . FILTER ((?s = resource:百里香) && (?p = property:中文学名))  }";
 
         TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
         TupleQueryResult result = tupleQuery.evaluate();
         // 提取结果的value值
-        ArrayList<Value> objects = new ArrayList<>();
+        ArrayList<String> objects = new ArrayList<>();
         try {
             while (result.hasNext()) {
                 BindingSet bindingSet = result.next();
                 Value o = bindingSet.getValue("o");
-                objects.add(o);
+                objects.add(o.stringValue());
             }
         } finally {
             result.close();
@@ -310,9 +318,9 @@ public class AG {
                     case 2: //assertTriples(true); break;
                     case 3:
                         //queryAll();
-                        queryTriples("卷毛猫","卷毛猫");
-                        //queryObject("百里香","分布区域");
-                    case 4: storeTriples();
+                        //queryTriples("卷毛猫","卷毛猫");
+                        queryObject("http://zhishi.me/baidubaike/resource/百里香","http://zhishi.me/baidubaike/property/分布区域");
+                    //case 4: storeTriples();
                         break;
                     default: LOG.info("Example" + choice + "() is not available in this release.");
                 }
