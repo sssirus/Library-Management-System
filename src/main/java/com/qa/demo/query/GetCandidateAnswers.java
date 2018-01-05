@@ -4,9 +4,12 @@ import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.*;
 import com.qa.demo.ontologyProcess.TDBCrudDriver;
 import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
+import com.qa.demo.questionAnalysis.Segmentation;
 import com.qa.demo.utils.kgprocess.KGTripletsClient;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static com.qa.demo.conf.Configuration.TDB_MODEL_NAME;
 
@@ -141,6 +144,64 @@ public class GetCandidateAnswers {
         return q;
     }
 
-
+    //基于答案的词性以及特殊的tokens对答案进行筛选
+    public static Question getCandidateAnswersWithIntention(Question q, DataSource p)
+    {
+        ArrayList<Answer> answers = _getTDBCandidateAnswers(q, p);
+        ArrayList<Answer> results = (ArrayList<Answer>)q.getCandidateAnswer();
+        //如果没有候选答案则返回一个默认答案同时将分数置为0；
+        String intention = q.getQuestionIntention();
+        if(!answers.isEmpty()||answers!=null) {
+            if (intention.equalsIgnoreCase("when") || intention.equalsIgnoreCase("who") || intention.equalsIgnoreCase("num")) {
+                for (Answer ans : answers) {
+                    String ansString = ans.getAnswerString();
+                    Segmentation.segmentation(ansString);
+                    List<Map<String, String>> tokensPos = Segmentation.getTokenPOSList();
+                    List<String> tokensSet = new ArrayList<String>();
+                    List<String> POSSet = new ArrayList<String>();
+                    System.out.println("The tokens and POS of answer are : ");
+                    for (Map<String, String> pair : tokensPos) {
+                        for (String token : pair.keySet()) {
+                            String POS = pair.get(token);
+                            tokensSet.add(token);
+                            POSSet.add(POS);
+                            System.out.print(token + " " + POS + " ");
+                        }
+                    }
+                    System.out.println();
+                    boolean legalFlag = false;
+                    switch (intention) {
+                        case "when":
+                            if (POSSet.contains("t") || POSSet.contains("tg") || POSSet.contains("m") || POSSet.contains("mq") || POSSet.contains("en"))  //地名的通用词性
+                                legalFlag = true;
+                            if (tokensSet.contains("年") || tokensSet.contains("月") || tokensSet.contains("日"))
+                                legalFlag = true;
+                            break;
+                        case "who":
+                            if (POSSet.contains("n") || POSSet.contains("nr") || POSSet.contains("nr1") || POSSet.contains("nr2") || POSSet.contains("nrj") || POSSet.contains("nrf") || POSSet.contains("nz") || POSSet.contains("en"))  //人的通用词性
+                                legalFlag = true;
+                            if (tokensSet.contains("组织") || tokensSet.contains("团体") || tokensSet.contains("协会") || tokensSet.contains("单位"))
+                                legalFlag = true;
+                            break;
+                        case "num":
+                            if (POSSet.contains("m") || POSSet.contains("mq") || POSSet.contains("nz"))  //识别量词的词性
+                                legalFlag = true;
+                            break;
+                        default://不做任何操作
+                    }
+                    if (legalFlag) //只有满足条件的才能作为答案
+                        results.add(ans);
+                }
+            }
+            //其他情况不做考虑，因为可能会遗漏答案：
+            //例如：稻曲病的为害部位是哪? 答案分词为：穗 j 部 q  与 String string="花生产于哪里？";  前者答案词性的情况无法完全覆盖
+            else
+            {
+                results.addAll(answers);
+            }
+        }
+        q.setCandidateAnswer(results);
+        return q;
+    }
 
 }

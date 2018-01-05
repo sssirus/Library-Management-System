@@ -207,6 +207,9 @@ public class Segmentation {
         Library.insertWord(forest1, new Value("哪天", "n", "1000"));
         Library.insertWord(forest1, new Value("哪年", "n", "1000"));
 
+
+        Library.insertWord(forest1, new Value("冬剪", "v", "1000"));
+        Library.insertWord(forest1, new Value("原产", "v", "1000"));
 //        Result terms = ToAnalysis.parse(sentence, forest1);
 //        Result terms = ToAnalysis.parse(sentence, forest);
         Result terms = ToAnalysis.parse(sentence, forest, forest1);
