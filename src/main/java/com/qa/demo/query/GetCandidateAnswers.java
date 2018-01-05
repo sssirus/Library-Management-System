@@ -91,7 +91,7 @@ public class GetCandidateAnswers {
     }
 
     private static ArrayList<Answer> _getTDBCandidateAnswers(Question q, DataSource p) {
-        System.out.println("_getTDBCandidateAnswers");
+        //System.out.println("_getTDBCandidateAnswers");
         ArrayList<Answer> answers = new ArrayList<>();
         ArrayList<QueryTuple> tuples = q.getQueryTuples();
         if (tuples.isEmpty() || tuples == null)
@@ -100,7 +100,7 @@ public class GetCandidateAnswers {
         {
             String subject_uri = tuple.getSubjectEntity().getEntityURI();
             String predicate_uri = "";
-            System.out.println(tuple.getSubjectEntity().getEntityURI());
+            //System.out.println(tuple.getSubjectEntity().getEntityURI());
             if(subject_uri.contains("zhwiki"))
                 predicate_uri = Configuration.PREDICATE_PREFIX_WIKI + tuple.getPredicate().getKgPredicateName();
             else if(subject_uri.contains("hudongbaike"))
@@ -141,7 +141,7 @@ public class GetCandidateAnswers {
      * @return
      */
     private static ArrayList<Answer> _getAllgregraphCandidateAnswers(Question q, DataSource p){
-        System.out.println("_getAllgregraphCandidateAnswers");
+        //System.out.println("_getAllgregraphCandidateAnswers");
         ArrayList<Answer> answers = new ArrayList<>();
         ArrayList<QueryTuple> tuples = q.getQueryTuples();
         if (tuples.isEmpty() || tuples == null)
