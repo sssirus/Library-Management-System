@@ -11,16 +11,17 @@ import com.qa.demo.query.*;
 import com.qa.demo.questionAnalysis.Segmentation;
 import com.qa.demo.utils.es.IndexFile;
 import org.apache.log4j.PropertyConfigurator;
+import org.bytedeco.javacpp.Loader;
+import org.nd4j.nativeblas.Nd4jCpu;
 import org.nlpcn.commons.lang.util.logging.Log;
 import org.nlpcn.commons.lang.util.logging.LogFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
 import static com.qa.demo.conf.FileConfig.LOG_PROPERTY;
+import static com.qa.demo.conf.FileConfig.W2V_file;
 
 /**
  * Description: 一个完全依赖于模板、同义词集合、es、常见问答对构建的基于文本的问答系统demo：
@@ -32,7 +33,14 @@ public class FaqDemo {
     public static final Log LOG = LogFactory.getLog(FaqDemo.class);
 //    private static Logger LOG = LogManager.getLogger(FaqDemo.class.getName());
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
+
+        try {
+            Loader.load(Nd4jCpu.class);
+        } catch (UnsatisfiedLinkError e) {
+            String path = Loader.cacheResource(Nd4jCpu.class, "windows-x86_64/jniNd4jCpu.dll").getPath();
+            new ProcessBuilder(W2V_file, path).start().waitFor();
+        }
 
         PropertyConfigurator.configure(LOG_PROPERTY);
         //系统初始化操作：es建立索引
