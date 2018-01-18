@@ -1,13 +1,18 @@
 package com.qa.demo.query;
 
+import com.qa.demo.algorithm.EditingDistance;
 import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.*;
 import com.qa.demo.questionAnalysis.QuestionAnalysisDriver;
 import com.qa.demo.questionAnalysis.QuestionAnalysisDriverImpl;
 import com.qa.demo.templateTraining.TemplateGeneralization;
+import com.qa.demo.utils.w2v.Word2VecGensimModel;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.recycler.Recycler;
 import org.elasticsearch.search.SearchHit;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.*;
 
@@ -119,8 +124,8 @@ public class ALGQuerySynonymKBQA  implements KbqaQueryDriver {
             Map.Entry<String, HashSet<String>> entry = (Map.Entry) (it.next());
             String predicatename = entry.getKey();
             HashSet<String> synonyms = entry.getValue();
-            double coOccurrenceScore = _coOccurrence(tokens, synonyms);
-            //double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
+            //double coOccurrenceScore = _coOccurrence(tokens, synonyms);
+            double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
             if(coOccurrenceScore>0)
             {
                 String templateString = "";
@@ -168,13 +173,47 @@ public class ALGQuerySynonymKBQA  implements KbqaQueryDriver {
             return 0;
         else if(tokens.size()==1&&tokens.get(0).equalsIgnoreCase(predicatename))  //直接与原谓词匹配
             return 1.0;
+
+        Word2VecGensimModel w2vModel = null;
+        try {
+            w2vModel = Word2VecGensimModel.getInstance();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         double co_occurrence_count = 0;
         for(String temp : tokens)
         {
-            if(synonyms.contains(temp))
-                co_occurrence_count++;
+            double score = 0.0;
+            for(String synonym : synonyms)
+            {
+                double temp_score = 0.0;
+
+                //若为同一个词，直接置为1.0；
+                if(temp.equalsIgnoreCase(synonym))
+                    temp_score = 1.0;
+
+                //若有包含关系，计算两者的编辑距离；
+                else if(temp.contains(synonym)||synonym.contains(temp))
+                {
+                    double ed1 = EditingDistance.getRepetitiveRate(temp, synonym);
+                    double ed2 = EditingDistance.getRepetitiveRate(synonym, temp);
+                    double ed = ed1 >= ed2 ? ed1 : ed2;
+                    temp_score = ed;
+                }
+
+                //其他则计算词向量的相似度；
+                else{
+                    temp_score = w2vModel.calcWordSimilarity(temp, synonym);
+                    temp_score = temp_score >= Configuration.W2V_THRESHOLD ? temp_score : 0.0;
+                }
+                score = score >= temp_score ? score : temp_score;
+            }
+                co_occurrence_count += score;
         }
-        return (co_occurrence_count/(double)(tokens.size()))-0.01;  //一般来说，近似的值，相似度不应该为1
+        return (co_occurrence_count/(double)(tokens.size()))-0.000001;  //一般来说，近似的值，相似度不应该为1
     }
 
 }

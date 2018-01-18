@@ -111,4 +111,8 @@ public class FileConfig {
     public static final String TDB = "src\\main\\resources\\data\\kbfile\\TDB";
     //供TDB读取RDF的文件位置；
     public static final String TDB_RDF = "src/main/resources/data/kbfile/NT_triplets.nt";
+    //农业词向量文件地址；
+    public static final String W2V_vector = "src\\main\\resources\\data\\WordVector\\wiki.zh.text.vector";
+    //DL4J DLL文件；
+    public static final String W2V_file = "src\\main\\resources\\data\\WordVector\\depends.exe";
 }

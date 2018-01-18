@@ -98,4 +98,7 @@ public class Configuration {
     //默认TDB model name；
     public static String TDB_MODEL_NAME = "TDB_agriculture";
 
+    //词向量相似度的过滤阈值，低于改阈值的都记为0.0；
+    public static Double W2V_THRESHOLD = 0.40;
+
 }
