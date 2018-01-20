@@ -19,8 +19,11 @@ public class NER {
                 = new HashMap<>();
         ArrayList<Entity> eList = new ArrayList<>();
         ArrayList<Triplet> triplets = KGTripletsClient.getInstance().getKgTriplets();
+        //String questionStringcandidate=questionString.replace("[","(").replace("]",")");
         for (Triplet t : triplets) {
             String sname = t.getSubjectName();
+            if(questionString.contains("[")&&questionString.contains("]")) //知识库中只包含"( )"的形式
+                questionString=questionString.replace("[","(").replace("]",")");
             if (questionString.contains(sname)) {
                 if (candidateEntities.isEmpty() ||
                         !candidateEntities.containsKey(sname)) {

@@ -14,7 +14,8 @@ class ALGQuerySynonymKBQATest {
 
         Question question=new Question();
         //String string="花生什么时候种植?";
-        String string="王绶是哪个民族的";  //民族 n
+        //String string="王绶是哪个民族的";  //民族 n
+        String string="翠菊的颜色是什么？";  //基于Word2Vec的测试用句 这里颜色与花色的相似度为0.55
 
         question.setQuestionString(string);
 
@@ -28,7 +29,7 @@ class ALGQuerySynonymKBQATest {
         System.out.println("The answer is :");
         for(Answer ans: answers)
         {
-            System.out.println(ans.getAnswerString());
+            System.out.println(ans.getAnswerString()+" "+ans.getAnswerScore());
         }
 
     }

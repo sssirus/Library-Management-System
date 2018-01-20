@@ -15,6 +15,50 @@ class QueryPOSKBQATest {
         Question question=new Question();
         // String string="花生什么时候种植？"; //时候，种植  KG中没有种植属性
 
+        //String string="翠菊的颜色是什么？";  //基于Word2Vec的测试用句 这里颜色与花色的相似度为0.55
+
+        //String string="朱之文[农民、歌手]的出生地是什么？"; //解决
+        //String string="蔡旭[小麦栽培及遗传育种学家]的出生地"; //解决
+        //String string="蔡旭[小麦栽培及遗传育种学家]的去世时间是什么"; //解决(答案可能写的太随意)
+        //String string="茴香[调料：小茴香]主要分布于哪里";  //解决
+        //String string="哪里分布有无花果[植物名称]"; //解决
+        //String string="无花果[植物名称]有什么别称 ";  //解决
+        //String string="茴香[调料：小茴香]的别称是什么"; //解决
+        //String string="茴香[调料：小茴香]的别名是什么";  //解决
+        //String string="无花果[植物名称]的分布区域是哪里";  //解决
+        //String string="油菜[植物]的中文学名是什么";  //解决
+
+
+        //String string="江口县有多大面积"; //解决
+        //String string="上曾村的人口是多少"; //解决
+        //String string="左权县有多大面积";  //解决
+        //String string="陈家弯自然村的面积是多少";  //解决
+        //String string="杨允奎的毕业院校是什么";  //一道题多个答案
+
+        //String string="枣刺蛾有什么其他名称？";  //解决
+        //String string="枣刺蛾有什么其他别名？";  //解决
+        //String string="刺桐花有什么其他名称";  //解决(答案可能写的太随意)
+        //String string="卷丹有什么其他名字";  //解决
+        //String string="山荆子有什么别名";  //解决(答案可能写的太随意)
+        //String string="玫瑰茄的别名是什么";  //解决(答案可能写的太随意)
+        //String string="低地紫羚的英文名称是什么";   //解决(答案可能写的太随意)
+
+
+        //String string="烈香杜鹃属于什么亚纲";   //解决(答案可能写的太随意)
+        //String string="鹿花菌的界是什么";  //解决(答案可能写的太随意)
+        //String string="大火草属于哪个亚纲";  //解决(答案可能写的太随意)
+        //String string="斯凯梗的亚门是什么";  //解决(答案可能写的太随意)
+        //String string="紫背闪羽蜂鸟属于哪个目";  //解决(答案可能写的太随意)
+
+
+        //String string="蒋德麒的职业";  //解决(答案可能写的太随意)
+        //String string="谁命名了蟹爪兰";  //解决(答案可能写的太随意)
+        //String string="鹿花菌的分布区域";  //解决(答案可能写的太随意)
+        String string="金光菊主要分布在哪里";  //解决(答案可能写的太随意)
+
+
+
+
         //String string="PigWIN的operatingSystem是什么";
         //String string="FreeRice的screenshot";
 
@@ -32,7 +76,7 @@ class QueryPOSKBQATest {
         //String string="哪里分布有花生"; //哪里 r 分布 v
         //String string="花生产于哪？";  //产 v 哪 r
         //String string="花生产于哪里？"; //产 v 哪里 r
-        String string="花生产于哪儿？"; //产 v 哪里 r
+        //String string="花生产于哪儿？"; //产 v 哪里 r
         //String string="吴耕民是在哪里逝世的"; //哪里 r 逝世 v KG中没有逝世地点
         //String string="吴耕民是在哪里出生的"; //哪里 r 出生 v
         //String string="孟加拉国猫的分布区域是哪里";
@@ -135,7 +179,7 @@ class QueryPOSKBQATest {
         System.out.println("The answer is :");
         for(Answer ans: answers)
         {
-            System.out.println(ans.getAnswerString());
+            System.out.println(ans.getAnswerString()+" "+ans.getAnswerScore());
         }
     }
 }

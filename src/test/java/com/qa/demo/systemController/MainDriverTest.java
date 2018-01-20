@@ -115,7 +115,7 @@ public class MainDriverTest {
 
             outputs.add(stringtemp);
             String returnedAnswer = q.getReturnedAnswer().getAnswerString().trim();
-            String acturalAnswer = q.getActuralAnswer();
+            String acturalAnswer = q.getActuralAnswer().trim();
 
             stringtemp = "Actural answer is: "+acturalAnswer + "\r\n";
             System.out.print(stringtemp);
