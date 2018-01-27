@@ -126,6 +126,7 @@ public class ALGQuerySynonymKBQA  implements KbqaQueryDriver {
             HashSet<String> synonyms = entry.getValue();
             //double coOccurrenceScore = _coOccurrence(tokens, synonyms);
             double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
+            //double coOccurrenceScore = _SoftSimilairty(tokens,predicatename,synonyms);
             if(coOccurrenceScore>0)
             {
                 String templateString = "";
@@ -214,6 +215,51 @@ public class ALGQuerySynonymKBQA  implements KbqaQueryDriver {
                 co_occurrence_count += score;
         }
         return (co_occurrence_count/(double)(tokens.size()))-0.000001;  //一般来说，近似的值，相似度不应该为1
+    }
+
+    //建议使用，但不强求，可以节省大量计算的时间
+    private double _SoftSimilairty(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms) {
+        if (tokens.isEmpty() || tokens.size() == 0)
+            return 0;
+        else if (synonyms.isEmpty() || synonyms.size() == 0)
+            return 0;
+        else if (tokens.size() == 1 && tokens.get(0).equalsIgnoreCase(predicatename))  //直接与原谓词匹配
+            return 1.0;
+
+        //定义词向量模型
+        Word2VecGensimModel w2vModel = null;
+        try {
+            w2vModel = Word2VecGensimModel.getInstance();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        double co_occurrence_count = 0;
+        for (String temp : tokens) {
+            double score = 0.0;
+            for (String synonym : synonyms) {
+                double temp_score = 0.0;
+                if (temp.equalsIgnoreCase(synonym)) {
+                    temp_score = 1.0;
+                } else { //其他则计算词向量的相似度；
+                    temp_score = w2vModel.calcWordSimilarity(temp, synonym);
+                    temp_score = temp_score >= 0.5 ? temp_score : 0.0; //对应可以在 Configuration.W2V_THRESHOLD 中设置阈值大小
+                    if (temp.contains(synonym) || synonym.contains(temp)) //若有包含关系，计算两者的编辑距离；
+                    {
+                        double ed1 = EditingDistance.getRepetitiveRate(temp, synonym);
+                        double ed2 = EditingDistance.getRepetitiveRate(synonym, temp);
+                        double ed = ed1 >= ed2 ? ed1 : ed2;
+                        temp_score = ed >= temp_score ? ed : temp_score;
+                    }
+                }
+                score = score >= temp_score ? score : temp_score;
+            }
+            co_occurrence_count += score; //取两者的最大值
+
+        }
+        return (co_occurrence_count / (double) (tokens.size())) - 0.01;  //一般来说，近似的值，相似度不应该为1
     }
 
 }

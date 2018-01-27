@@ -22,6 +22,12 @@ public class QuestionAnalysisDriverImpl implements QuestionAnalysisDriver {
     public Question segmentationQuestion(Question q) {
 
         HashMap<Entity, ArrayList<String>> map = new HashMap<>();
+        //建议加上，但不强求
+        /*if(q.getQuestionString().contains("[")&&q.getQuestionString().contains("]")) //知识库中只包含"( )"的形式
+        {
+            String query=q.getQuestionString().replace("[", "(").replace("]", ")");
+            q.setQuestionString(query);
+        }*/
         for (Entity e : q.getQuestionEntity()) {
             String sentence =
                     q.getQuestionString().replace(e.getKgEntityName(), Configuration.SPLITSTRING);
@@ -41,10 +47,15 @@ public class QuestionAnalysisDriverImpl implements QuestionAnalysisDriver {
     public Question segmentationQuestionPOS(Question q) {
         HashMap<Entity, ArrayList<String>> map = new HashMap<>();
         HashMap<Entity,List<Map<String,String>>> posMap=new HashMap<>();
-
+        if(q.getQuestionString().contains("[")&&q.getQuestionString().contains("]")) //知识库中只包含"( )"的形式
+        {
+            String query=q.getQuestionString().replace("[", "(").replace("]", ")");
+            q.setQuestionString(query);
+        }
         for (Entity e : q.getQuestionEntity()) {
             String sentence =
                     q.getQuestionString().replace(e.getKgEntityName(), Configuration.SPLITSTRING);
+
             for (String punctuation : Configuration.PUNCTUATION_SET) {
                 sentence = sentence.replace(punctuation, "");
             }
