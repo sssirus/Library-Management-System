@@ -2,17 +2,13 @@ package com.qa.demo.query;
 
 import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.*;
-import com.qa.demo.ontologyProcess.TDBCrudDriver;
-import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
 import com.qa.demo.questionAnalysis.Segmentation;
-import com.qa.demo.utils.NT_TRIPLE.AG;
+import com.qa.demo.utils.nt_triple.AG;
 import com.qa.demo.utils.kgprocess.KGTripletsClient;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.qa.demo.conf.Configuration.TDB_MODEL_NAME;
 
 /**
  *  Created time: 2017_09_08
@@ -94,7 +90,7 @@ public class GetCandidateAnswers {
         //System.out.println("_getTDBCandidateAnswers");
         ArrayList<Answer> answers = new ArrayList<>();
         ArrayList<QueryTuple> tuples = q.getQueryTuples();
-        if (tuples.isEmpty() || tuples == null)
+        if (tuples == null || tuples.isEmpty())
             return answers;
         for (QueryTuple tuple : tuples)
         {
