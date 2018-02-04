@@ -65,10 +65,13 @@ public class MainDriverTest {
 
             count++;
 
+            //根据自然问句的依存分析树生成拓扑结构，根据预先定义的拓扑模板得到对应的谓词指称；并与同义词词典进行基于词向量的相似度计算，返回答案，泛化主要功能；
+            KbqaQueryDriver TopologicalPatternKBQADriver = new TopologicalPatternKBQA();
+            q = TopologicalPatternKBQADriver.kbQueryAnswers(q);
 
             //利用词性标注的模板与用户意图来进行tokens的生成，再基于同义词集合来进行相似度的计算；
-            KbqaQueryDriver QueryPOSKBQADriver = new QueryPOSKBQA();
-            q = QueryPOSKBQADriver.kbQueryAnswers(q);
+            /*KbqaQueryDriver QueryPOSKBQADriver = new QueryPOSKBQA();
+            q = QueryPOSKBQADriver.kbQueryAnswers(q);*/
 
             //从模板的同义词集合中查询（模板分词之后形成的同义词集合），泛化主要功能；
             /*KbqaQueryDriver ALGQuerySynonymKBQADriver = new ALGQuerySynonymKBQA();
