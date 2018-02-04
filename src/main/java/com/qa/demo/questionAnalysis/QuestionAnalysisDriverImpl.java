@@ -23,11 +23,11 @@ public class QuestionAnalysisDriverImpl implements QuestionAnalysisDriver {
 
         HashMap<Entity, ArrayList<String>> map = new HashMap<>();
         //建议加上，但不强求
-        /*if(q.getQuestionString().contains("[")&&q.getQuestionString().contains("]")) //知识库中只包含"( )"的形式
+        if(q.getQuestionString().contains("[")&&q.getQuestionString().contains("]")) //知识库中只包含"( )"的形式
         {
             String query=q.getQuestionString().replace("[", "(").replace("]", ")");
             q.setQuestionString(query);
-        }*/
+        }
         for (Entity e : q.getQuestionEntity()) {
             String sentence =
                     q.getQuestionString().replace(e.getKgEntityName(), Configuration.SPLITSTRING);
@@ -72,7 +72,6 @@ public class QuestionAnalysisDriverImpl implements QuestionAnalysisDriver {
         //存储的词性标注
         q.setQuestionEntityPOS(posMap);
 
-
         String StringWithoutEntity=q.getQuestionString();
         for (Entity e : q.getQuestionEntity()) {
             StringWithoutEntity =StringWithoutEntity.replace(e.getKgEntityName(), Configuration.SPLITSTRING);
@@ -83,9 +82,9 @@ public class QuestionAnalysisDriverImpl implements QuestionAnalysisDriver {
         StringWithoutEntity = StringWithoutEntity.trim();
 
         //意图分析
-        IntentionAnlysis anlysis=new IntentionAnlysis();
-        String intetion=anlysis.intentionAnlysis(StringWithoutEntity);
-        q.setQustionIntention(intetion);
+        IntentionAnlysis analysis=new IntentionAnlysis();
+        String intention = analysis.intentionAnlysis(StringWithoutEntity);
+        q.setQustionIntention(intention);
         /*//词性标注  (可能未来做多实体识别的时候会有用)
         //提取词性标注
         List<Map<String,String>> tokenPOSList=new ArrayList<Map<String,String>>();
@@ -98,7 +97,48 @@ public class QuestionAnalysisDriverImpl implements QuestionAnalysisDriver {
 
     //输入一个Question类型的数据结构，对其进行POS分析后输出；
     public Question posQuestion(Question q) {
-        return null;
+            HashMap<Entity, ArrayList<String>> map = new HashMap<>();
+            HashMap<Entity,List<Map<String,String>>> posMap=new HashMap<>();
+            if(q.getQuestionString().contains("[")&&q.getQuestionString().contains("]")) //知识库中只包含"( )"的形式
+            {
+                String query=q.getQuestionString().replace("[", "(").replace("]", ")");
+                q.setQuestionString(query);
+            }
+
+            for (Entity e : q.getQuestionEntity()) {
+                String sentence =
+                        q.getQuestionString().replace(e.getKgEntityName(), "ENTITY");
+
+                for (String punctuation : Configuration.PUNCTUATION_SET) {
+                    sentence = sentence.replace(punctuation, "");
+                }
+                sentence = sentence.trim();
+//                System.out.println("待分词的句子为：" + sentence);
+                Segmentation.segmentationWithoutStopwords(sentence);
+                ArrayList<String> tokens = (ArrayList<String>) Segmentation.getTokens();
+                map.put(e, tokens);
+                //获取该实体对应的词性标注
+                List<Map<String, String>> tokensPos= Segmentation.getTokenPOSList();
+                posMap.put(e,tokensPos);
+            }
+            q.setQuestionToken(map);
+            //存储的词性标注
+            q.setQuestionEntityPOS(posMap);
+
+//            //意图分析
+//            String StringWithoutEntity=q.getQuestionString();
+//            for (Entity e : q.getQuestionEntity()) {
+//                StringWithoutEntity =StringWithoutEntity.replace(e.getKgEntityName(), Configuration.SPLITSTRING);
+//                for (String punctuation : Configuration.PUNCTUATION_SET) {
+//                    StringWithoutEntity = StringWithoutEntity.replace(punctuation, "");
+//                }
+//            }
+//            StringWithoutEntity = StringWithoutEntity.trim();
+//
+//            IntentionAnlysis analysis=new IntentionAnlysis();
+//            String intention = analysis.intentionAnlysis(StringWithoutEntity);
+//            q.setQustionIntention(intention);
+            return q;
     }
 
     //输入一个Question类型的数据结构，对其进行NER分析后输出；

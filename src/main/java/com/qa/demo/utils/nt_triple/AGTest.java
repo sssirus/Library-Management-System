@@ -1,46 +1,21 @@
-package com.qa.demo.utils.NT_TRIPLE;
+package com.qa.demo.utils.nt_triple;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import com.qa.demo.conf.Configuration;
-import com.qa.demo.conf.FileConfig;
-import com.qa.demo.dataStructure.Question;
 import com.qa.demo.utils.io.IOTool;
-import com.qa.demo.utils.trainingcorpus.ExtractQuestionsFromText;
 import org.eclipse.rdf4j.model.*;
 
-import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.eclipse.rdf4j.model.vocabulary.RDFS;
-import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.*;
-import org.eclipse.rdf4j.query.impl.DatasetImpl;
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.ntriples.NTriplesWriter;
-import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
-import com.franz.agraph.pool.AGConnPool;
-import com.franz.agraph.pool.AGConnProp;
-import com.franz.agraph.pool.AGPoolProp;
-import com.franz.agraph.repository.AGAbstractRepository;
 import com.franz.agraph.repository.AGCatalog;
-import com.franz.agraph.repository.AGFreetextIndexConfig;
-import com.franz.agraph.repository.AGFreetextQuery;
-import com.franz.agraph.repository.AGGraphQuery;
-import com.franz.agraph.repository.AGQueryLanguage;
 import com.franz.agraph.repository.AGRepository;
 import com.franz.agraph.repository.AGRepositoryConnection;
 import com.franz.agraph.repository.AGServer;
-import com.franz.agraph.repository.AGTupleQuery;
 import com.franz.agraph.repository.AGValueFactory;
 
 

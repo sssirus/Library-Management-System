@@ -1,4 +1,4 @@
-package com.qa.demo.utils.NT_TRIPLE;
+package com.qa.demo.utils.nt_triple;
 
 import com.franz.agraph.repository.*;
 import org.eclipse.rdf4j.model.*;

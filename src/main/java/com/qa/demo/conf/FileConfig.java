@@ -115,4 +115,13 @@ public class FileConfig {
     public static final String W2V_vector = "src\\main\\resources\\data\\WordVector\\wiki.zh.text.vector";
     //DL4J DLL文件；
     public static final String W2V_file = "src\\main\\resources\\data\\WordVector\\depends.exe";
+
+    //topological pattern的子树文件；
+    public static final String TP_SUBTREE = "src\\main\\resources\\data\\topologicalPattern\\TPattern_Subtree.txt";
+    //topological pattern的谓词指称文件；
+    public static final String TP_PREDICATE_MENTION = "src\\main\\resources\\data\\topologicalPattern\\TPattern_PredicateMention.txt";
+    //topological pattern中分析句法树的模型文件；
+    public static final String TP_CNN_MODEL = "src\\main\\resources\\data\\topologicalPattern\\chinesePCFG.ser.gz";
+
+
 }
