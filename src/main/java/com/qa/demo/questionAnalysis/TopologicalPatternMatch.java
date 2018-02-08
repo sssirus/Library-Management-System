@@ -364,7 +364,19 @@ public class TopologicalPatternMatch {
                 predicateMentionWords.add(s);
             }
         }
-        return predicateMentionWords;
+        ArrayList<String> refinedWords = new ArrayList<>();
+        //停用词与""都需要去掉
+        HashSet<String> stopwords = MoveStopwords.getInstance().getStopwordSet();
+        for (int i = 0; i < predicateMentionWords.size(); i++) {
+            String s = predicateMentionWords.get(i).toString();
+                if (!stopwords.isEmpty()) {
+                    if (!stopwords.contains(s)&&!s.equalsIgnoreCase("")) {
+                        refinedWords.add(s);
+                    }
+                }
+
+        }
+        return refinedWords;
     }
 
     public boolean isChinese(char c) {
