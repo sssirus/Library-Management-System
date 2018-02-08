@@ -1,7 +1,6 @@
 package com.qa.demo.query;
 
 import com.qa.demo.algorithm.EditingDistance;
-import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.*;
 import com.qa.demo.questionAnalysis.QuestionAnalysisDriver;
 import com.qa.demo.questionAnalysis.QuestionAnalysisDriverImpl;
@@ -77,28 +76,11 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
             ArrayList<String> tokens = q.getQuestionToken().get(entry.getKey());
             String[] questionTokens = tokens.toArray(new String[tokens.size()]);
 
-            ArrayList<String> predicateMentionWords = TopologicalPatternMatch.getInstance()
+            ArrayList<ArrayList<String>> predicateMentionWordList = TopologicalPatternMatch.getInstance()
                     .getPredicateMention(posSequence, questionTokens);
 
-            //如果没有找到谓词指称;
-            if(predicateMentionWords.size()==0)
-            {
-                for(Map<String,String> map : entry.getValue())
-                {
-                    Iterator it2 = map.entrySet().iterator();
-                    String POS = "";
-                    while(it2.hasNext())
-                    {
-                        Map.Entry<String,String> entry2 = (Map.Entry) it2.next();
-                        POS = entry2.getValue();
-                        String verb = entry2.getKey();
-                        if(POS.equalsIgnoreCase("v"))
-                            predicateMentionWords.add(verb);
-                    }
-                }
-            }
-
-            if(predicateMentionWords.size()==0)
+            //如果没有找到谓词指称；
+            if(predicateMentionWordList.size()==0)
             {
                 Predicate p = new Predicate();
                 p.setKgPredicateName("描述");
@@ -123,9 +105,25 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
                 tuple.setPredicate(qTemplate.getPredicate());
                 tuple.setTupleScore(0.5);
                 tuples.add(tuple);
+
+                ArrayList<String> predicateMentionWord = new ArrayList<>();
+                for(Map<String,String> map : entry.getValue())
+                {
+                    Iterator it2 = map.entrySet().iterator();
+                    String POS = "";
+                    while(it2.hasNext())
+                    {
+                        Map.Entry<String,String> entry2 = (Map.Entry) it2.next();
+                        POS = entry2.getValue();
+                        String verb = entry2.getKey();
+                        if(POS.equalsIgnoreCase("v"))
+                            predicateMentionWord.add(verb);
+                    }
+                }
+                predicateMentionWordList.add(predicateMentionWord);
             }
 
-            else
+            for(ArrayList<String> predicateMentionWords : predicateMentionWordList)
             {
                 List<QueryTuple> ts = _searchTemplate(subjectEntity, predicateMentionWords);
                 for(QueryTuple t : ts)
@@ -151,7 +149,6 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
             Map.Entry<String, HashSet<String>> entry = (Map.Entry) (it.next());
             String predicatename = entry.getKey();
             HashSet<String> synonyms = entry.getValue();
-            //double coOccurrenceScore = _coOccurrence(tokens, synonyms);
 //            double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
             double coOccurrenceScore = _SoftSimilairty(tokens,predicatename,synonyms);
             if(coOccurrenceScore>0)
@@ -175,6 +172,44 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
             }
         }
         return tuples;
+    }
+
+    //使用同义词词组，以词组中是否有该谓词或者用编辑距离计算相似度；
+    private double _coOccurrenceNew(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms)
+    {
+        if(tokens.isEmpty()||tokens.size()==0)
+            return 0;
+        else if(synonyms.isEmpty()||synonyms.size()==0)
+            return 0;
+        else if(tokens.size()==1&&tokens.get(0).equalsIgnoreCase(predicatename))  //直接与原谓词匹配
+            return 1.0;
+
+        double co_occurrence_score = 0;
+        for(String temp : tokens)
+        {
+            double score = 0.0;
+            for(String synonym : synonyms)
+            {
+                double temp_score;
+
+                //若为同一个词，直接置为1.0；
+                if(temp.equalsIgnoreCase(synonym))
+                    temp_score = 1.0;
+
+                //计算两者的编辑距离；
+                else
+                {
+                    double ed1 = EditingDistance.getRepetitiveRate(temp, synonym);
+                    double ed2 = EditingDistance.getRepetitiveRate(synonym, temp);
+                    double ed = ed1 >= ed2 ? ed1 : ed2;
+                    temp_score = ed;
+                }
+
+                score = score >= temp_score ? score : temp_score;
+            }
+            co_occurrence_score += score;
+        }
+        return (co_occurrence_score/(double)(tokens.size()))-0.000001;  //一般来说，近似的值，相似度不应该为1
     }
 
     //建议使用，但不强求，可以节省大量计算的时间

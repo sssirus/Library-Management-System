@@ -33,8 +33,11 @@ class TopologicalPatternMatchTest {
         System.out.println(TopologicalPatternMatch.getInstance().getParseTreeString(sentence));
         String subtreeString = TopologicalPatternMatch.getInstance().extractSubTree(posSequence, sentence);
         System.out.println(subtreeString);
-        ArrayList<String> topologicalPatternString = TopologicalPatternMatch.getInstance().buildTopologicalPattern(subtreeString);
-        System.out.println(topologicalPatternString);
+        ArrayList<ArrayList<String>> topologicalPatternString = TopologicalPatternMatch.getInstance().buildTopologicalPattern(subtreeString);
+        for(ArrayList<String> tpstring : topologicalPatternString)
+        {
+            System.out.println(tpstring);
+        }
     }
 
 }

@@ -196,10 +196,10 @@ public class TopologicalPatternMatch {
         return subtreeString;
     }
 
-    public ArrayList<String> buildTopologicalPattern(String subtreeString)
+    public ArrayList<ArrayList<String>> buildTopologicalPattern(String subtreeString)
     {
-        //问句中最终指向谓词指称的句子成分；
-        ArrayList<String> predicateMentionWords = new ArrayList<>();
+        //由于可能有重复模板，故返回的谓词指称可能不止一个，需要返回一个列表的列表；
+        ArrayList<ArrayList<String>> predicateMentionWordList = new ArrayList<>();
         String topologicalPatternString = "";
         int count = 0;//node的表示层数；
         int no = 0;//表示出现'['的元素位置下标；
@@ -329,65 +329,75 @@ public class TopologicalPatternMatch {
                 topologicalPatternString += patternElements.get(i).replace(" ","") + "+";
         }
 
-        ArrayList<String> predicateMention = findPredicateMention(topologicalPatternString);
+        ArrayList<ArrayList<String>> predicateMentionList = findPredicateMention(topologicalPatternString);
 
-
-        if(predicateMention.size()==0)
-            return predicateMentionWords;
-
-        //返回谓词指称对应的句子成分;
-        for(String predicatemention : predicateMention)
+        if(predicateMentionList.size()!=0)
         {
-            int index = patternElementIndex.get(predicatemention);
-            //谓词指称在句法树中的层数，只将其后续大于该层的那些words输出，表示为这个谓词指称的子树成分;
-            int layer = savtree[1];
-            int layerCount = layer;
-            String output = "";
-            for(int i = index; i<subtreeStringArray.length;i++)
+            for(ArrayList<String> predicateMention : predicateMentionList)
             {
-                if(subtreeStringArray[i]=='[')
-                    layerCount++;
-                if(subtreeStringArray[i]==']')
+                ArrayList<String> predicateMentionWords = new ArrayList<>();
+                if(predicateMention.size()==0)
+                    predicateMentionWordList.add(predicateMentionWords);
+                else
                 {
-                    layerCount--;
-                    output += ' ';
-                    if(layerCount<layer)
-                        break;
-                }
-                if(isChinese(subtreeStringArray[i]))
-                    output += subtreeStringArray[i];
-            }
-            output = output.trim();
-            String[] outputs = output.split(" ");
-            for (String s : outputs)
-            {
-                predicateMentionWords.add(s);
-            }
-        }
-        ArrayList<String> refinedWords = new ArrayList<>();
-        //停用词与""都需要去掉
-        HashSet<String> stopwords = MoveStopwords.getInstance().getStopwordSet();
-        for (int i = 0; i < predicateMentionWords.size(); i++) {
-            String s = predicateMentionWords.get(i).toString();
-                if (!stopwords.isEmpty()) {
-                    if (!stopwords.contains(s)&&!s.equalsIgnoreCase("")) {
-                        refinedWords.add(s);
+                    //返回谓词指称对应的句子成分;
+                    for(String predicatemention : predicateMention)
+                    {
+                        int index = patternElementIndex.get(predicatemention);
+                        //谓词指称在句法树中的层数，只将其后续大于该层的那些words输出，表示为这个谓词指称的子树成分;
+                        int layer = savtree[1];
+                        int layerCount = layer;
+                        String output = "";
+                        for(int i = index; i<subtreeStringArray.length;i++)
+                        {
+                            if(subtreeStringArray[i]=='[')
+                                layerCount++;
+                            if(subtreeStringArray[i]==']')
+                            {
+                                layerCount--;
+                                output += ' ';
+                                if(layerCount<layer)
+                                    break;
+                            }
+                            if(isChinese(subtreeStringArray[i]))
+                                output += subtreeStringArray[i];
+                        }
+                        output = output.trim();
+                        String[] outputs = output.split(" ");
+                        for (String s : outputs)
+                        {
+                            predicateMentionWords.add(s);
+                        }
                     }
+                    ArrayList<String> refinedWords = new ArrayList<>();
+                    //停用词与""都需要去掉
+                    HashSet<String> stopwords = MoveStopwords.getInstance().getStopwordSet();
+                    for (int i = 0; i < predicateMentionWords.size(); i++) {
+                        String s = predicateMentionWords.get(i).toString();
+                        if (!stopwords.isEmpty()) {
+                            if (!stopwords.contains(s)&&!s.equalsIgnoreCase("")) {
+                                refinedWords.add(s);
+                            }
+                        }
+                    }
+                    predicateMentionWordList.add(refinedWords);
                 }
+            }
 
         }
-        return refinedWords;
+
+        return predicateMentionWordList;
     }
 
     public boolean isChinese(char c) {
         return c >= 0x4E00 &&  c <= 0x9FA5;// 根据字节码判断
     }
 
-    public ArrayList<String> findPredicateMention(String topologicalPatternString)
+    public ArrayList<ArrayList<String>> findPredicateMention(String topologicalPatternString)
     {
-        ArrayList<String> predicateMention = new ArrayList<>();
+        ArrayList<ArrayList<String>> predicateMentionList = new ArrayList<>();
         if(topologicalPatternString.split("->").length==1)
-            return predicateMention;
+            return predicateMentionList;
         String root = topologicalPatternString.split("->")[0];
         String[] leaves = topologicalPatternString.split("->")[1].trim().split("\\+");
         ArrayList<String> leavePOS = new ArrayList<>();
@@ -404,22 +414,23 @@ public class TopologicalPatternMatch {
         {
             if(topologicalPattern.sameTopologicalPattern(topologicalStructure.getTopologicalPattern()))
             {
+                ArrayList<String> predicateMention;
                 predicateMention = topologicalStructure.getPredicate_mention();
-                break;
+                predicateMentionList.add(predicateMention);
             }
         }
-        return predicateMention;
+        return predicateMentionList;
     }
 
-    public ArrayList<String> getPredicateMention(String posSequence, String[] sentence)
+    public ArrayList<ArrayList<String>> getPredicateMention(String posSequence, String[] sentence)
     {
-        ArrayList<String> predicateMention = new ArrayList<>();
+        ArrayList<ArrayList<String>> predicateMentionList;
 
         String subtreeString = this.extractSubTree(posSequence, sentence);
 
-        predicateMention = buildTopologicalPattern(subtreeString);
+        predicateMentionList = buildTopologicalPattern(subtreeString);
 
-        return predicateMention;
+        return predicateMentionList;
     }
 
 
