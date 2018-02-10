@@ -197,6 +197,13 @@ public class GetCandidateAnswers {
         return q;
     }
 
+    /**
+     * create by Weizhuo Li
+     * getCandidateAnswers with Intention
+     * @param q
+     * @param p
+     * @return q
+     */
     //基于答案的词性以及特殊的tokens对答案进行筛选
     public static Question getCandidateAnswersWithIntention(Question q, DataSource p)
     {

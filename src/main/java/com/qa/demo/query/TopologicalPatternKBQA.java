@@ -210,9 +210,11 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
                 double temp_score;
 
                 //若为同一个词，直接置为1.0；
-                if(temp.equalsIgnoreCase(synonym))
+                if(temp.equalsIgnoreCase(synonym)) {
                     temp_score = 1.0;
-
+                    score=temp_score;
+                    break;
+                }
                 //计算两者的编辑距离；
                 else
                 {

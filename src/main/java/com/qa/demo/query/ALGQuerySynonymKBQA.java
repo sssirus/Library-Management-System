@@ -193,9 +193,11 @@ public class ALGQuerySynonymKBQA implements KbqaQueryDriver {
                 double temp_score = 0.0;
 
                 //若为同一个词，直接置为1.0；
-                if(temp.equalsIgnoreCase(synonym))
+                if(temp.equalsIgnoreCase(synonym)) {
                     temp_score = 1.0;
-
+                    score=temp_score;
+                    break;
+                }
                 //若有包含关系，计算两者的编辑距离；
                 else if(temp.contains(synonym)||synonym.contains(temp))
                 {

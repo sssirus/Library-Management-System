@@ -1,5 +1,6 @@
 package com.qa.demo.query;
 
+import com.qa.demo.answerAnalysis.AnswerAnalysisDriverImpl;
 import com.qa.demo.dataStructure.Answer;
 import com.qa.demo.dataStructure.Entity;
 import com.qa.demo.dataStructure.Question;
@@ -14,6 +15,26 @@ class QueryPOSKBQATest {
 
         Question question=new Question();
         // String string="花生什么时候种植？"; //时候，种植  KG中没有种植属性
+
+        //无答案
+        // String string="Herdsman的operatingSystem";
+        //String string="哪里有木麻黄";
+        //String string="木麻黄的二名法是什么";
+        //String string="史来贺评传的ISBN";
+
+        //错误答案
+        //String string="哪些部位被柑桔黑色蒂腐病危害了";
+        //String string="杨屾去世于哪年";
+        //String string="山荆子属于哪个亚纲";
+        //String string="蒋德麒生于哪里";
+        //String string="江口县位于哪里";
+        //String string="章文才去世于哪天";
+        //String string="怎么用二名法命名茶条槭";
+        //String string="袁隆平的国籍是什么";
+
+       // String string="水萝卜又名什么";
+        String string="史来贺评传有几页";
+
 
         //String string="翠菊的颜色是什么？";  //基于Word2Vec的测试用句 这里颜色与花色的相似度为0.55
 
@@ -54,7 +75,7 @@ class QueryPOSKBQATest {
         //String string="蒋德麒的职业";  //解决(答案可能写的太随意)
         //String string="谁命名了蟹爪兰";  //解决(答案可能写的太随意)
         //String string="鹿花菌的分布区域";  //解决(答案可能写的太随意)
-        String string="金光菊主要分布在哪里";  //解决(答案可能写的太随意)
+        //String string="金光菊主要分布在哪里";  //解决(答案可能写的太随意)
 
 
 
@@ -154,6 +175,9 @@ class QueryPOSKBQATest {
 
         KbqaQueryDriver QueryPOSKBQADriver = new QueryPOSKBQA();
         question = QueryPOSKBQADriver.kbQueryAnswers(question);
+
+        AnswerAnalysisDriverImpl analysisDriver = new AnswerAnalysisDriverImpl();
+        question = analysisDriver.rankAnswerCandidate(question);
 
         System.out.println("Query: "+string);
         question.printQuestionToken();

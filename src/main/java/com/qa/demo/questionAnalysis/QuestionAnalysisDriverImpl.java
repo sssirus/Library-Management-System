@@ -95,6 +95,30 @@ public class QuestionAnalysisDriverImpl implements QuestionAnalysisDriver {
         return q;
     }
 
+    public Question intentionQuestion(Question q) {
+        HashMap<Entity, ArrayList<String>> map = new HashMap<>();
+        HashMap<Entity,List<Map<String,String>>> posMap=new HashMap<>();
+        if(q.getQuestionString().contains("[")&&q.getQuestionString().contains("]")) //知识库中只包含"( )"的形式
+        {
+            String query=q.getQuestionString().replace("[", "(").replace("]", ")");
+            q.setQuestionString(query);
+        }
+        String StringWithoutEntity=q.getQuestionString();
+        for (Entity e : q.getQuestionEntity()) {
+            StringWithoutEntity =StringWithoutEntity.replace(e.getKgEntityName(), Configuration.SPLITSTRING);
+            for (String punctuation : Configuration.PUNCTUATION_SET) {
+                StringWithoutEntity = StringWithoutEntity.replace(punctuation, "");
+            }
+        }
+        StringWithoutEntity = StringWithoutEntity.trim();
+
+        //意图分析
+        IntentionAnlysis analysis=new IntentionAnlysis();
+        String intention = analysis.intentionAnlysis(StringWithoutEntity);
+        q.setQustionIntention(intention);
+        return q;
+    }
+
     //输入一个Question类型的数据结构，对其进行POS分析后输出；
     public Question posQuestion(Question q) {
             HashMap<Entity, ArrayList<String>> map = new HashMap<>();
