@@ -264,8 +264,9 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
             Map.Entry<String, HashSet<String>> entry = (Map.Entry) (it.next());
             String predicatename = entry.getKey();
             HashSet<String> synonyms = entry.getValue();
-            //double coOccurrenceScore = _coOccurrenceNew(predicatetokens,predicatename,synonyms);
+            //double coOccurrenceScore = _coOccurrence(predicatetokens,predicatename,synonyms);
             double coOccurrenceScore = _SoftSimilairty(predicatetokens, predicatename, synonyms);
+            //double coOccurrenceScore = _SoftSimilairty2(predicatetokens, predicatename, synonyms);
             if (coOccurrenceScore > 0) {
                 String templateString = "";
                 for (String synonym : synonyms) {
@@ -287,22 +288,8 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
         return tuples;
     }
 
-    //找到tokens和synonyms中有多少共现词并计算相似度；
-    private double _coOccurrence(ArrayList<String> tokens, HashSet<String> synonyms) {
-        if (tokens.isEmpty() || tokens.size() == 0)
-            return 0;
-        else if (synonyms.isEmpty() || synonyms.size() == 0)
-            return 0;
-        double co_occurrence_count = 0;
-        for (String temp : tokens) {
-            if (synonyms.contains(temp))
-                co_occurrence_count++;
-        }
-        return (co_occurrence_count / (double) (tokens.size()));  //一般来说，近似的值，相似度不应该为1
-    }
-
     //找到tokens和synonyms中有多少共现词并计算相似度；进一步区分的相似度
-    private double _coOccurrenceNew(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms) {
+    private double _coOccurrence(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms) {
         if (tokens.isEmpty() || tokens.size() == 0)
             return 0;
         else if (synonyms.isEmpty() || synonyms.size() == 0)
@@ -317,6 +304,7 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
         return (co_occurrence_count / (double) (tokens.size())) - 0.01;  //一般来说，近似的值，相似度不应该为1
     }
 
+    //泛化方法，但时间开销较大。
     private double _SoftSimilairty(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms) {
         if (tokens.isEmpty() || tokens.size() == 0)
             return 0;
@@ -342,8 +330,6 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
                 double temp_score = 0.0;
                 if (temp.equalsIgnoreCase(synonym)) {
                     temp_score = 1.0;
-                    score=temp_score;
-                    break;
                 } else { //其他则计算词向量的相似度；
                     temp_score = w2vModel.calcWordSimilarity(temp, synonym);
                     temp_score = temp_score >= 0.5 ? temp_score : 0.0; //对应可以在 Configuration.W2V_THRESHOLD 中设置阈值大小
@@ -354,6 +340,45 @@ public class QueryPOSKBQA implements KbqaQueryDriver {
                         double ed = ed1 >= ed2 ? ed1 : ed2;
                         temp_score = ed >= temp_score ? ed : temp_score;
                     }
+                }
+                score = score >= temp_score ? score : temp_score;
+            }
+            co_occurrence_count += score; //取两者的最大值
+
+        }
+        return (co_occurrence_count / (double) (tokens.size())) - 0.01;  //一般来说，近似的值，相似度不应该为1
+    }
+
+    //泛化方法，但时间开销较大(不考虑编辑距离)
+    private double _SoftSimilairty2(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms) {
+        if (tokens.isEmpty() || tokens.size() == 0)
+            return 0;
+        else if (synonyms.isEmpty() || synonyms.size() == 0)
+            return 0;
+        else if (tokens.size() == 1 && tokens.get(0).equalsIgnoreCase(predicatename))  //直接与原谓词匹配
+            return 1.0;
+
+        //定义词向量模型
+        Word2VecGensimModel w2vModel = null;
+        try {
+            w2vModel = Word2VecGensimModel.getInstance();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        double co_occurrence_count = 0;
+        for (String temp : tokens) {
+            double score = 0.0;
+            for (String synonym : synonyms) {
+                double temp_score = 0.0;
+                if (temp.equalsIgnoreCase(synonym)) {
+                    score=1.0;
+                    break;
+                } else { //其他则计算词向量的相似度；
+                    temp_score = w2vModel.calcWordSimilarity(temp, synonym);
+                    temp_score = temp_score >= 0.5 ? temp_score : 0.0; //对应可以在 Configuration.W2V_THRESHOLD 中设置阈值大小
                 }
                 score = score >= temp_score ? score : temp_score;
             }

@@ -36,7 +36,7 @@ public class TopologicalPatternKBQAWithIntention implements KbqaQueryDriver {
         q = qAnalysisDriver.intentionQuestion(q);  //获取用户的意图
         //q = qAnalysisDriver.segmentationQuestionPOS(q); //会识别出用户意图以及解析出词性
         q = this.patternExtractQuestion(q);
-       // q = GetCandidateAnswers.getCandidateAnswers(q, DataSource.SYNONYM);
+        //q = GetCandidateAnswers.getCandidateAnswers(q, DataSource.SYNONYM);
         q = GetCandidateAnswers.getCandidateAnswersWithIntention(q, DataSource.SYNONYM); //由于又要对答案进行一些词性判别，时间开销较高
         return q;
     }
@@ -234,9 +234,9 @@ public class TopologicalPatternKBQAWithIntention implements KbqaQueryDriver {
             Map.Entry<String, HashSet<String>> entry = (Map.Entry) (it.next());
             String predicatename = entry.getKey();
             HashSet<String> synonyms = entry.getValue();
-//            double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
+            double coOccurrenceScore = _coOccurrence(predicatetokens,predicatename,synonyms);
+            //double coOccurrenceScore = _coOccurrenceNew(predicatetokens,predicatename,synonyms);
 //            double coOccurrenceScore =_SoftSimilairty(predicatetokens,predicatename,synonyms);
-            double coOccurrenceScore =_SoftSimilairty2(predicatetokens,predicatename,synonyms); //对相似度计算进行一定的近似
             if(coOccurrenceScore>0) {
                 String templateString = "";
                 for(String synonym : synonyms){
@@ -258,6 +258,23 @@ public class TopologicalPatternKBQAWithIntention implements KbqaQueryDriver {
         return tuples;
     }
 
+    //时间开销小，且能保证精度
+    private double _coOccurrence(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms) {
+        if (tokens.isEmpty() || tokens.size() == 0)
+            return 0;
+        else if (synonyms.isEmpty() || synonyms.size() == 0)
+            return 0;
+        else if (tokens.size() == 1 && tokens.get(0).equalsIgnoreCase(predicatename))  //直接与原谓词匹配
+            return 1.0;
+        double co_occurrence_count = 0;
+        for (String temp : tokens) {
+            if (synonyms.contains(temp))
+                co_occurrence_count++;
+        }
+        return (co_occurrence_count / (double) (tokens.size())) - 0.01;  //一般来说，近似的值，相似度不应该为1
+    }
+
+    //时间开销过大，并不推荐
     private double _SoftSimilairty(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms) {
         if (tokens.isEmpty() || tokens.size() == 0)
             return 0;
@@ -303,56 +320,4 @@ public class TopologicalPatternKBQAWithIntention implements KbqaQueryDriver {
         return (co_occurrence_count / (double) (tokens.size())) - 0.01;  //一般来说，近似的值，相似度不应该为1
     }
 
-
-    private double _SoftSimilairty2(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms) {
-        if (tokens.isEmpty() || tokens.size() == 0)
-            return 0;
-        else if (synonyms.isEmpty() || synonyms.size() == 0)
-            return 0;
-        else if (tokens.size() == 1 && tokens.get(0).equalsIgnoreCase(predicatename))  //直接与原谓词匹配
-            return 1.0;
-
-        //定义词向量模型
-        Word2VecGensimModel w2vModel = null;
-        try {
-            w2vModel = Word2VecGensimModel.getInstance();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        double co_occurrence_count = 0;
-        for (String temp : tokens) {
-            double score = 0.0;
-            for (String synonym : synonyms) {
-                double temp_score = 0.0;
-                if (temp.equalsIgnoreCase(synonym)) {
-                    temp_score = 1.0;
-                    score=temp_score;
-                    break;
-                } else { //其他则计算词向量的相似度；
-                    double ed=0.0;
-                    if (temp.contains(synonym) || synonym.contains(temp)) //若有包含关系，计算两者的编辑距离；
-                    {
-                        double ed1 = EditingDistance.getRepetitiveRate(temp, synonym);
-                        double ed2 = EditingDistance.getRepetitiveRate(synonym, temp);
-                         ed = ed1 >= ed2 ? ed1 : ed2;
-                    }
-                    if(ed<0.5)  //词向量在编辑距离小于0.5的时候才激活进行词向量相似度的计算
-                    {
-                        double w2v_score=w2vModel.calcWordSimilarity(temp, synonym);
-                        temp_score = w2v_score >= ed ? w2v_score :ed; //对应可以在 Configuration.W2V_THRESHOLD 中设置阈值大小
-                    }
-                    else
-                    {
-                        temp_score=ed;
-                    }
-                }
-                score = score >= temp_score ? score : temp_score;
-            }
-            co_occurrence_count += score; //取两者的最大值
-        }
-        return (co_occurrence_count / (double) (tokens.size())) - 0.01;  //一般来说，近似的值，相似度不应该为1
-    }
 }

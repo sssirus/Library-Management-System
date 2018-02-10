@@ -49,9 +49,9 @@ class TopologicalPatternKBQAWithIntentionTest {
 
         //String string="水萝卜又名什么";
         //String string="葡萄褐斑病又名什么";
-        //String string="没药有什么作用";
+        String string="没药有什么作用";
         //String string="青瓜又名什么";
-        String string="史来贺评传有几页";
+        //String string="史来贺评传有几页";
 
 
         question.setQuestionString(string);
