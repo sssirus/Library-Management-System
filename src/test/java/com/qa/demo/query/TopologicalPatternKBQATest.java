@@ -25,12 +25,13 @@ class TopologicalPatternKBQATest {
 //        String string="翠菊的颜色是什么？";  //基于Word2Vec的测试用句 这里颜色与花色的相似度为0.55
 //        String string="翠菊的规范汉字编号是什么？";
 //        String string="翠菊是什么？";
-        String string = "哪里有木麻黄？";
+//        String string = "哪里有木麻黄？";
+        String string = "PigWIN的operatingSystem是什么？";
 
         question.setQuestionString(string);
 
         KbqaQueryDriver topologocalPatternKBQADriver = new TopologicalPatternKBQA();
-        question = topologocalPatternKBQADriver.kbQueryAnswers(question);
+         question = topologocalPatternKBQADriver.kbQueryAnswers(question);
 
         //对答案进行排序
         AnswerAnalysisDriverImpl analysisDriver = new AnswerAnalysisDriverImpl();
