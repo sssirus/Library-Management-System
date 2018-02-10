@@ -12,8 +12,11 @@ public interface QuestionAnalysisDriver {
     //输入一个Question类型的数据结构，对其进行分词后输出；
     Question segmentationQuestion(Question q);
 
-    //输入一个Question类型的数据结构，对其进行分词后输出；
+    //输入一个Question类型的数据结构，对其词性标注，并将用户意图保存后输出；
     Question segmentationQuestionPOS(Question q);
+
+    //输入一个Question类型的数据结构，获取它的用户意图
+    Question intentionQuestion(Question q);
 
     //输入一个Question类型的数据结构，对其进行POS分析后输出；
     Question posQuestion(Question q);
