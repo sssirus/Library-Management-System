@@ -59,69 +59,86 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
             Map.Entry<Entity,List<Map<String,String>>> entry = (Map.Entry) it.next();
             Entity subjectEntity = entry.getKey();
 
+            //增加了处理英语的部分；
             String posSequence = "";
+            ArrayList<String> engPosList = new ArrayList<>();
             for(Map<String,String> map : entry.getValue())
             {
                 Iterator it2 = map.entrySet().iterator();
                 String POS = "";
+                String entity_string;
                 while(it2.hasNext())
                 {
                     Map.Entry<String,String> entry2 = (Map.Entry) it2.next();
                     POS = entry2.getValue();
+                    entity_string = entry2.getKey();
+                    if(!entity_string.equalsIgnoreCase("entity")&&POS.equalsIgnoreCase("en"))
+                        engPosList.add(entity_string);
                 }
                 posSequence += POS + " ";
             }
 //            System.out.println(posSequence.trim());
 
-            ArrayList<String> tokens = q.getQuestionToken().get(entry.getKey());
-            String[] questionTokens = tokens.toArray(new String[tokens.size()]);
+            ArrayList<ArrayList<String>> predicateMentionWordList = new ArrayList<>();
 
-            ArrayList<ArrayList<String>> predicateMentionWordList = TopologicalPatternMatch.getInstance()
-                    .getPredicateMention(posSequence, questionTokens);
-
-            //如果没有找到谓词指称；
-            if(predicateMentionWordList.size()==0)
+            //当POS中有为EN的成分；
+            if(engPosList.size()>0)
             {
-                Predicate p = new Predicate();
-                p.setKgPredicateName("描述");
-                QueryTuple tuple = new QueryTuple();
-                QuestionTemplate qTemplate = new QuestionTemplate();
-                qTemplate.setPredicate(p);
-                qTemplate.setTemplateString("描述");
-                tuple.setTemplate(qTemplate);
-                tuple.setSubjectEntity(subjectEntity);
-                tuple.setPredicate(qTemplate.getPredicate());
-                tuple.setTupleScore(0.5);
-                tuples.add(tuple);
-
-                p = new Predicate();
-                p.setKgPredicateName("简介");
-                tuple = new QueryTuple();
-                qTemplate = new QuestionTemplate();
-                qTemplate.setPredicate(p);
-                qTemplate.setTemplateString("简介");
-                tuple.setTemplate(qTemplate);
-                tuple.setSubjectEntity(subjectEntity);
-                tuple.setPredicate(qTemplate.getPredicate());
-                tuple.setTupleScore(0.5);
-                tuples.add(tuple);
-
-                ArrayList<String> predicateMentionWord = new ArrayList<>();
-                for(Map<String,String> map : entry.getValue())
-                {
-                    Iterator it2 = map.entrySet().iterator();
-                    String POS = "";
-                    while(it2.hasNext())
-                    {
-                        Map.Entry<String,String> entry2 = (Map.Entry) it2.next();
-                        POS = entry2.getValue();
-                        String verb = entry2.getKey();
-                        if(POS.equalsIgnoreCase("v"))
-                            predicateMentionWord.add(verb);
-                    }
-                }
-                predicateMentionWordList.add(predicateMentionWord);
+                predicateMentionWordList.add(engPosList);
             }
+
+            else{
+                ArrayList<String> tokens = q.getQuestionToken().get(entry.getKey());
+                String[] questionTokens = tokens.toArray(new String[tokens.size()]);
+
+                predicateMentionWordList = TopologicalPatternMatch.getInstance()
+                        .getPredicateMention(posSequence, questionTokens);
+
+                //如果没有找到谓词指称；
+                if(predicateMentionWordList.size()==0)
+                {
+                    Predicate p = new Predicate();
+                    p.setKgPredicateName("描述");
+                    QueryTuple tuple = new QueryTuple();
+                    QuestionTemplate qTemplate = new QuestionTemplate();
+                    qTemplate.setPredicate(p);
+                    qTemplate.setTemplateString("描述");
+                    tuple.setTemplate(qTemplate);
+                    tuple.setSubjectEntity(subjectEntity);
+                    tuple.setPredicate(qTemplate.getPredicate());
+                    tuple.setTupleScore(0.5);
+                    tuples.add(tuple);
+
+                    p = new Predicate();
+                    p.setKgPredicateName("简介");
+                    tuple = new QueryTuple();
+                    qTemplate = new QuestionTemplate();
+                    qTemplate.setPredicate(p);
+                    qTemplate.setTemplateString("简介");
+                    tuple.setTemplate(qTemplate);
+                    tuple.setSubjectEntity(subjectEntity);
+                    tuple.setPredicate(qTemplate.getPredicate());
+                    tuple.setTupleScore(0.5);
+                    tuples.add(tuple);
+
+                    ArrayList<String> predicateMentionWord = new ArrayList<>();
+                    for(Map<String,String> map : entry.getValue())
+                    {
+                        Iterator it2 = map.entrySet().iterator();
+                        String POS = "";
+                        while(it2.hasNext())
+                        {
+                            Map.Entry<String,String> entry2 = (Map.Entry) it2.next();
+                            POS = entry2.getValue();
+                            String verb = entry2.getKey();
+                            if(POS.equalsIgnoreCase("v"))
+                                predicateMentionWord.add(verb);
+                        }
+                    }
+                    predicateMentionWordList.add(predicateMentionWord);
+                }
+            }
+
 
             for(ArrayList<String> predicateMentionWords : predicateMentionWordList)
             {
@@ -149,8 +166,8 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
             Map.Entry<String, HashSet<String>> entry = (Map.Entry) (it.next());
             String predicatename = entry.getKey();
             HashSet<String> synonyms = entry.getValue();
-//            double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
-            double coOccurrenceScore = _SoftSimilairty(tokens,predicatename,synonyms);
+            double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
+//            double coOccurrenceScore = _SoftSimilairty(tokens,predicatename,synonyms);
             if(coOccurrenceScore>0)
             {
                 String templateString = "";
