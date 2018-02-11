@@ -245,6 +245,8 @@ public class ALGQuerySynonymKBQA implements KbqaQueryDriver {
                 double temp_score = 0.0;
                 if (temp.equalsIgnoreCase(synonym)) {
                     temp_score = 1.0;
+                    score = temp_score;
+                    break;
                 } else { //其他则计算词向量的相似度；
                     temp_score = w2vModel.calcWordSimilarity(temp, synonym);
                     temp_score = temp_score >= 0.5 ? temp_score : 0.0; //对应可以在 Configuration.W2V_THRESHOLD 中设置阈值大小
