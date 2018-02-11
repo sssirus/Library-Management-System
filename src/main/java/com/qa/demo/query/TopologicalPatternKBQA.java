@@ -166,9 +166,9 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
             Map.Entry<String, HashSet<String>> entry = (Map.Entry) (it.next());
             String predicatename = entry.getKey();
             HashSet<String> synonyms = entry.getValue();
-            double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
+//            double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
 //            double coOccurrenceScore = _SoftSimilairty(tokens,predicatename,synonyms);
-//            double coOccurrenceScore = _coOccurrence(tokens, synonyms);
+            double coOccurrenceScore = _coOccurrence(tokens, synonyms);
             if(coOccurrenceScore>0)
             {
                 String templateString = "";
@@ -229,7 +229,7 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
                 //若为同一个词，直接置为1.0；
                 if(temp.equalsIgnoreCase(synonym)) {
                     temp_score = 1.0;
-                    score=temp_score;
+                    score = temp_score;
                     break;
                 }
                 //计算两者的编辑距离；
@@ -277,6 +277,8 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
                 double temp_score = 0.0;
                 if (temp.equalsIgnoreCase(synonym)) {
                     temp_score = 1.0;
+                    score = temp_score;
+                    break;
                 } else { //其他则计算词向量的相似度；
                     temp_score = w2vModel.calcWordSimilarity(temp, synonym);
                     temp_score = temp_score >= 0.5 ? temp_score : 0.0; //对应可以在 Configuration.W2V_THRESHOLD 中设置阈值大小
