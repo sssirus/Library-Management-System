@@ -23,16 +23,14 @@ public class MainDriverTest {
     private static Logger LOG = LogManager.getLogger(FaqDemo.class.getName());
     @Test
     void runDemo() throws IOException {
-        //系统初始化操作：es建立索引
-        //SYNONYM为分词之后的模板；
-        IndexFile.indexFaqData(DataSource.SYNONYM);
-        //为19000条百科知识的索引；
-        IndexFile.indexEncyclopediaData(DataSource.ENCYCLOPEDIA);
-        //FAQ为常用问答对的索引；PATTERN为模板的索引;FAQ_T为生成的所有问题的模板；
-//      IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN, DataSource.FAQ_T);
-        IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN);
-//      IndexFile.indexFaqData(DataSource.FAQ);
-        LOG.info(" [info]已建立faq索引！");
+//        //系统初始化操作：es建立索引
+//        //SYNONYM为分词之后的模板；
+//        IndexFile.indexFaqData(DataSource.SYNONYM);
+//        //为19000条百科知识的索引；
+//        IndexFile.indexEncyclopediaData(DataSource.ENCYCLOPEDIA);
+//        //FAQ为常用问答对的索引；PATTERN为模板的索引;FAQ_T为生成的所有问题的模板；
+//        IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN);
+//        LOG.info(" [info]已建立faq索引！");
 
         TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
         tdbCrudDriver.loadTDBModel();
@@ -66,12 +64,12 @@ public class MainDriverTest {
             count++;
 
             //根据依存分析树生成拓扑模板得到对应的谓词指称，并与同义词词典进行基于词向量的相似度计算，返回答案，泛化主要功能；
-            KbqaQueryDriver TopologicalPatternKBQADriver = new TopologicalPatternKBQAWithIntention();
-            q = TopologicalPatternKBQADriver.kbQueryAnswers(q);
+//            KbqaQueryDriver TopologicalPatternKBQADriver = new TopologicalPatternKBQAWithIntention();
+//            q = TopologicalPatternKBQADriver.kbQueryAnswers(q);
 
             //根据依存分析树生成拓扑模板得到对应的谓词指称，并与同义词词典进行基于词向量的相似度计算，返回答案，泛化主要功能；
-            /*KbqaQueryDriver TopologicalPatternKBQADriver = new TopologicalPatternKBQA();
-            q = TopologicalPatternKBQADriver.kbQueryAnswers(q);*/
+            KbqaQueryDriver TopologicalPatternKBQADriver = new TopologicalPatternKBQA();
+            q = TopologicalPatternKBQADriver.kbQueryAnswers(q);
 
             //利用词性标注的模板与用户意图来进行tokens的生成，再基于同义词集合来进行相似度的计算；
             /*KbqaQueryDriver QueryPOSKBQADriver = new QueryPOSKBQA();

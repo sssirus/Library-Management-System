@@ -168,6 +168,7 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
             HashSet<String> synonyms = entry.getValue();
             double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
 //            double coOccurrenceScore = _SoftSimilairty(tokens,predicatename,synonyms);
+//            double coOccurrenceScore = _coOccurrence(tokens, synonyms);
             if(coOccurrenceScore>0)
             {
                 String templateString = "";
@@ -191,6 +192,22 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
         return tuples;
     }
 
+    //找到tokens和synonyms中有多少共现词并计算相似度；
+    private double _coOccurrence(ArrayList<String> tokens, HashSet<String> synonyms)
+    {
+        if(tokens.isEmpty()||tokens.size()==0)
+            return 0;
+        else if(synonyms.isEmpty()||synonyms.size()==0)
+            return 0;
+        double co_occurrence_count = 0;
+        for(String temp : tokens)
+        {
+            if(synonyms.contains(temp))
+                co_occurrence_count++;
+        }
+        return (co_occurrence_count/(double)(tokens.size()));
+    }
+
     //使用同义词词组，以词组中是否有该谓词或者用编辑距离计算相似度；
     private double _coOccurrenceNew(ArrayList<String> tokens, String predicatename, HashSet<String> synonyms)
     {
@@ -207,7 +224,7 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
             double score = 0.0;
             for(String synonym : synonyms)
             {
-                double temp_score;
+                double temp_score = 0.0;
 
                 //若为同一个词，直接置为1.0；
                 if(temp.equalsIgnoreCase(synonym)) {
@@ -218,10 +235,13 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
                 //计算两者的编辑距离；
                 else
                 {
-                    double ed1 = EditingDistance.getRepetitiveRate(temp, synonym);
-                    double ed2 = EditingDistance.getRepetitiveRate(synonym, temp);
-                    double ed = ed1 >= ed2 ? ed1 : ed2;
-                    temp_score = ed;
+                    if (temp.contains(synonym) || synonym.contains(temp)) //若有包含关系，计算两者的编辑距离；
+                    {
+                        double ed1 = EditingDistance.getRepetitiveRate(temp, synonym);
+                        double ed2 = EditingDistance.getRepetitiveRate(synonym, temp);
+                        double ed = ed1 >= ed2 ? ed1 : ed2;
+                        temp_score = ed;
+                    }
                 }
 
                 score = score >= temp_score ? score : temp_score;
