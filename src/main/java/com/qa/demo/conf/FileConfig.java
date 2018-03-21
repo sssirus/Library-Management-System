@@ -123,5 +123,7 @@ public class FileConfig {
     //topological pattern中分析句法树的模型文件；
     public static final String TP_CNN_MODEL = "src\\main\\resources\\data\\topologicalPattern\\chinesePCFG.ser.gz";
 
+    //别名词典；
+    public static final String ALIAS_DICTIONARY = "src\\main\\resources\\data\\templateRepository\\aliasDict.txt";
 
 }
