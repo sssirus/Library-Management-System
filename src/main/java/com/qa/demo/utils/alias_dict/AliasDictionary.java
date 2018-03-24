@@ -48,7 +48,7 @@ public class AliasDictionary {
                 // 以“称”结尾: 别称、全称、简称、旧称等。( XX 职称等除外)
                 // 以“名称”结尾: 中文名称、其它名称等。( 专辑名称、粉丝名称等除外)
                 if(predicate.endsWith("名") || predicate.endsWith("称") || predicate.endsWith("名称")){
-                    if(value.length() > 0) aliasDict.add(entity + " " + value + "\r\n");
+                    if(value.length() > 0) aliasDict.add(entityURI + " " + value + "\r\n");
                     if(!dict_statistics.containsKey(predicate)){
                         dict_statistics.put(predicate,1);
                     }else{
@@ -59,17 +59,17 @@ public class AliasDictionary {
                 if(entity.contains("(") && entity.contains(")")){
                     String bracket = entity.substring(entity.indexOf("("),entity.indexOf(")")+1);
                     String alias = entity.replace(bracket, "");
-                    if(alias.length() > 0) aliasDict.add(entity + " " + alias + "\r\n");
+                    if(alias.length() > 0) aliasDict.add(entityURI + " " + alias + "\r\n");
                     dict_statistics.put("括号", dict_statistics.get("括号")+1);
                 }
                 // 书名号的别名是书名号内部的
                 if(entity.contains("《") && entity.contains("》")){
                     String alias = entity.substring(entity.indexOf("《") + 1,entity.indexOf("》"));
-                    if(alias.length() > 0) aliasDict.add(entity + " " + alias + "\r\n");
+                    if(alias.length() > 0) aliasDict.add(entityURI + " " + alias + "\r\n");
                     dict_statistics.put("书名号", dict_statistics.get("书名号")+1);
                 }
             }
-            //System.out.println(dict_statistics);
+            System.out.println(dict_statistics);
             br.close();
             reader.close();
         } catch (FileNotFoundException e) {
@@ -108,11 +108,11 @@ public class AliasDictionary {
         return  aliasList;
     }
 
-//    public static void main(String[] args) throws IOException {
-//        String dictpath = ALIAS_DICTIONARY;
-//        String filepath = NT_TRIPLETS;
-//        //BuildAliasDict(filepath, dictpath);
-//        ArrayList<String> aliases = SearchAliasDict("可蒙犬", dictpath);
-//        System.out.println(aliases);
-//    }
+    public static void main(String[] args) throws IOException {
+        String dictpath = ALIAS_DICTIONARY;
+        String filepath = NT_TRIPLETS;
+        BuildAliasDict(filepath, dictpath);
+        ArrayList<String> aliases = SearchAliasDict("可蒙犬", dictpath);
+        System.out.println(aliases);
+    }
 }

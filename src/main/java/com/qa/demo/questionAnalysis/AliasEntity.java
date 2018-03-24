@@ -17,9 +17,11 @@ import static com.qa.demo.conf.FileConfig.ALIAS_DICTIONARY;
  * @author J.Y.Zhang
  * @create 2018-03-24
  * Function description:
- * 打扰学长啊 我看实体识别那部分 好像是把问题拆成单个字
- * 只要数据库里的实体名包括问题里的任何字 那么这个实体就是候选实体了 然后打分
- * 类似的找别名 别名库里的别名只要和问题有交集 那么就把他对应的实体返回
+ * 实体识别那部分 好像是把问题拆成单个字
+ * 只要数据库里的实体名包括问题里的任何字 那么这个实体就是候选实体了 然后打分 筛选
+ * 类似的方法 找别名 别名库里的别名只要和问题有交集 那么就把他对应的实体返回 已完成
+ * 但是这会返回超多的实体 而且没分数
+ * 我觉得接下来 或者是用问题分词的结果找对应的实体 或者学习一下打分过滤的方法 就可以用了
  **/
 public class AliasEntity {
     public static ArrayList<Entity> getAliasEntities(String questionString) {
