@@ -170,9 +170,7 @@ public class QuestionAnalysisDriverImpl implements QuestionAnalysisDriver {
     public Question nerQuestion(Question q) {
         q.setQuestionEntity(NER.getEntities(q.getQuestionString()));
         // add by yaoleo about aliasDict if NER.getEntities()没找到实体 那么尝试别名
-//        if(NER.getEntities(q.getQuestionString()).size() == 1){
-//            q.setQuestionEntity(AliasEntity.getAliasEntities(q.getQuestionString()));
-//        }
+        //q.setQuestionEntity(AliasEntity.getAliasEntities(q.getQuestionString()));
         return q;
     }
 

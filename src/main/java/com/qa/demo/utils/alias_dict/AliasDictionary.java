@@ -47,12 +47,24 @@ public class AliasDictionary {
                 // 以“名”结尾: 别名、中文名、英文名、原名等。( 第 X 名、排名等除外) 。
                 // 以“称”结尾: 别称、全称、简称、旧称等。( XX 职称等除外)
                 // 以“名称”结尾: 中文名称、其它名称等。( 专辑名称、粉丝名称等除外)
-                if(predicate.endsWith("名") || predicate.endsWith("称") || predicate.endsWith("名称")){
-                    if(value.length() > 0) aliasDict.add(entityURI + " " + value + "\r\n");
-                    if(!dict_statistics.containsKey(predicate)){
-                        dict_statistics.put(predicate,1);
-                    }else{
-                        dict_statistics.put(predicate, dict_statistics.get(predicate)+1);
+                if(predicate.endsWith("名") || predicate.endsWith("称") || predicate.endsWith("名称")) {
+                    if(  !predicate.equals("专辑名称") && !predicate.equals("粉丝名称") && !predicate.endsWith("排名")) {
+                        // <http://zhishi.me/hudongbaike/resource/云猫> 石猫、石斑猫、草豹、小云豹、小云猫、豹皮
+                        // <http://zhishi.me/hudongbaike/resource/麻梨> 麻梨子，黄皮梨
+                        if (value.contains("、") || value.contains(",")) {
+                            String[] valueList = value.split("、|,");
+                            for (String val : valueList) {
+                                if (val.length() > 0) aliasDict.add(entityURI + " " + val + "\r\n");
+                            }
+                        } else {
+                            if (value.length() > 0) aliasDict.add(entityURI + " " + value + "\r\n");
+                        }
+
+                        if (!dict_statistics.containsKey(predicate)) {
+                            dict_statistics.put(predicate, 1);
+                        } else {
+                            dict_statistics.put(predicate, dict_statistics.get(predicate) + 1);
+                        }
                     }
                 }
                 // 实体名中有括号 括号外最为实体的别名
@@ -94,10 +106,10 @@ public class AliasDictionary {
         String line = null;
 
         while ((line = br.readLine()) != null) {
-            String entityname = line.split(" ")[0];
+            String entityUrl = line.split(" ")[0];
             String aliasname = line.split(" ")[1];
 
-            if (entity.equals(entityname)){
+            if (entityUrl.indexOf(entity) != -1){
                 aliasList.add(aliasname);
             }
         }
@@ -108,11 +120,11 @@ public class AliasDictionary {
         return  aliasList;
     }
 
-    public static void main(String[] args) throws IOException {
-        String dictpath = ALIAS_DICTIONARY;
-        String filepath = NT_TRIPLETS;
-        BuildAliasDict(filepath, dictpath);
-        ArrayList<String> aliases = SearchAliasDict("可蒙犬", dictpath);
-        System.out.println(aliases);
-    }
+//    public static void main(String[] args) throws IOException {
+//        String dictpath = ALIAS_DICTIONARY;
+//        String filepath = NT_TRIPLETS;
+//        BuildAliasDict(filepath, dictpath);
+//        ArrayList<String> aliases = SearchAliasDict("可蒙犬", dictpath);
+//        System.out.println(aliases);
+//    }
 }
