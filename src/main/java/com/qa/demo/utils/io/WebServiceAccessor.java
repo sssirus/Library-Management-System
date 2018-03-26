@@ -22,6 +22,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import static java.lang.Thread.sleep;
+
 public class WebServiceAccessor {
     private static final WebServiceAccessor webServiceAccessor = new WebServiceAccessor();
 
@@ -43,24 +45,38 @@ public class WebServiceAccessor {
      * @return 三元组链表
      */
     @NotNull
-    public static List<Triplet> query(Triplet triplet) throws IOException {
+    public static List<Triplet> query(Triplet triplet) throws UnsupportedEncodingException {
 
         WebServiceAccessor accessor = WebServiceAccessor._getWebServiceAccessor();
+        // 根据三元组生成对应的 sparql 查询语句
         String sparql = accessor._createSparql(triplet);
 
+        // 存放结果
         List<Triplet> tripletList = null;
 
-        try {
-            tripletList = accessor._queryServer(sparql);
+        // 进行请求，出错重传
+        boolean endFlag = false;
+        do {
+            try {
+                tripletList = accessor._queryServer(sparql);
+                endFlag = true;
+            } catch (IOException e) {
 
-        } catch (IOException e) {
-            System.err.println("传输出错，请重试");
-            throw new IOException();
+                System.err.println("传输出错，正在重试");
 
-        } catch (URISyntaxException e) {
-            System.err.println("网页 URI 错误");
-            assert false;
-        }
+                try {
+                    sleep(500);
+
+                } catch (InterruptedException ignored) {
+
+                }
+
+            } catch (URISyntaxException e) {
+                System.err.println("网页 URI 错误");
+                assert false;
+            }
+        } while (!endFlag);
+
 
         return tripletList;
     }
