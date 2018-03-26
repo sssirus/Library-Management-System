@@ -51,7 +51,7 @@ public class IOTool {
         }
     }
 
-        public static ArrayList<String> readLinesFromFile(String filepath) throws IOException {
+    public static ArrayList<String> readLinesFromFile(String filepath) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filepath),"utf-8"));
         String line = "";
         ArrayList<String> list = new ArrayList<>();
