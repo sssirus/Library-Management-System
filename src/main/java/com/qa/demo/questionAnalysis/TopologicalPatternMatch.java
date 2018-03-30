@@ -406,6 +406,7 @@ public class TopologicalPatternMatch {
         TopologicalPattern topologicalPattern = new TopologicalPattern();
         topologicalPattern.setRoot_POS(root);
         topologicalPattern.setLeaves_POS(leavePOS);
+//        topologicalPattern.printTopologicalPattern();
 
         ArrayList<TopologicalStructure> topologicalStructureRepository
                 = TopologicalPatternClient.getInstance().getTopologicalStructureRepository();

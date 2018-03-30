@@ -22,11 +22,11 @@ class TopologicalPatternKBQATest {
         Question question=new Question();
         //String string="花生什么时候种植?";
         //String string="王绶是哪个民族的";  //民族 n
-//        String string="翠菊的颜色是什么？";  //基于Word2Vec的测试用句 这里颜色与花色的相似度为0.55
+        String string="翠菊的花色是什么？";  //基于Word2Vec的测试用句 这里颜色与花色的相似度为0.55
 //        String string="翠菊的规范汉字编号是什么？";
 //        String string="翠菊是什么？";
 //        String string = "哪里有木麻黄？";
-        String string = "PigWIN的operatingSystem是什么？";
+//        String string = "PigWIN的operatingSystem是什么？";
 
         question.setQuestionString(string);
 
