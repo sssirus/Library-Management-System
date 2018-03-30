@@ -79,13 +79,13 @@ public class FaqDemo {
             KbqaQueryDriver ALGQuerySynonymKBQADriver = new ALGQuerySynonymKBQA();
             question = ALGQuerySynonymKBQADriver.kbQueryAnswers(question);
 
-            //从ES索引的模板库中匹配模板（模板分词之后形成的关键词组合），并形成查询三元组，最终通过KG三元组匹配得到候选答案;
-            KbqaQueryDriver esQuerySynonymKBQADriver = new ESQuerySynonymKBQA();
-            question = esQuerySynonymKBQADriver.kbQueryAnswers(question);
-
-            //从ES索引的模板库中匹配模板（从自然问句中将实体去掉后的模板），并形成查询三元组，最终通过KG三元组匹配得到候选答案;
-            QueryPatternKBQA queryPatternKBQA = new QueryPatternKBQA();
-            question = queryPatternKBQA.kbQueryAnswers(question);
+//            //从ES索引的模板库中匹配模板（模板分词之后形成的关键词组合），并形成查询三元组，最终通过KG三元组匹配得到候选答案;
+//            KbqaQueryDriver esQuerySynonymKBQADriver = new ESQuerySynonymKBQA();
+//            question = esQuerySynonymKBQADriver.kbQueryAnswers(question);
+//
+//            //从ES索引的模板库中匹配模板（从自然问句中将实体去掉后的模板），并形成查询三元组，最终通过KG三元组匹配得到候选答案;
+//            QueryPatternKBQA queryPatternKBQA = new QueryPatternKBQA();
+//            question = queryPatternKBQA.kbQueryAnswers(question);
 
             //从ES中检索faq;
             QueryFaq queryFaq = new QueryFaq();
