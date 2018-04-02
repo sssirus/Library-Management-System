@@ -74,7 +74,7 @@ public class Word2VecGensimModel {
         return wordVector;
     }
 
-    public double calcVecSimilarity(double[] vec1, double[] vec2)
+    public static double calcVecSimilarity(double[] vec1, double[] vec2)
     {
         if(vec1==null||vec1.length==0)
             return 0.0;
