@@ -12,12 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class WebServiceAccessorTest {
     @Test
-    void query() throws UnsupportedEncodingException {
+    void query() {
 
         // 作为载体的三元组
         Triplet triplet = new Triplet();
-        triplet.setPredicateURI("http://zhishi.me/ontology/category");
-
+        // triplet.setSubjectURI("http://zhishi.me/hudongbaike/resource/新疆小麦");
+        // triplet.setPredicateURI("http://zhishi.me/hudongbaike/property/中文别名");
+        triplet.setObjectURI("彼得巴甫洛夫小麦");
         // 存放结果
         List<Triplet> tripletList = null;
 
@@ -28,9 +29,10 @@ class WebServiceAccessorTest {
         System.out.println();
         System.out.println(tripletList.size());
         System.out.println();
-        System.out.println(tripletList.get(0).getSubjectURI());
-        System.out.println(tripletList.get(0).getPredicateURI());
-        System.out.println(tripletList.get(0).getObjectURI());
+        System.out.println(tripletList.get(tripletList.size() - 1).getSubjectURI());
+        System.out.println(tripletList.get(tripletList.size() - 1).getPredicateURI());
+        System.out.println(tripletList.get(tripletList.size() - 1).getObjectURI());
+
     }
 
 }
