@@ -219,5 +219,6 @@ class GetCandidateAnswersTest {
             System.out.println(triplet1.getPredicateURI());
             System.out.println(triplet1.getObjectURI());
         }
+        // "select ?s ?p ?o {?s ?p ?o FILTER (?s IN ( <http://zhishi.me/hudongbaike/resource/%E6%96%B0%E7%96%86%E5%B0%8F%E9%BA%A6> ))}"
     }
 }
