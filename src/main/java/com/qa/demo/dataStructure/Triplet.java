@@ -149,5 +149,13 @@ public class Triplet {
     public void setPredicateType(PredicateType predicateType) {
         this.predicateType = predicateType;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Triplet triplet = (Triplet)obj;
+        return subjectURI.equals(triplet.subjectURI)
+                && predicateURI.equals(triplet.predicateURI)
+                && objectURI.equals(triplet.objectURI);
+    }
 }
 
