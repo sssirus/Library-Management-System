@@ -1,7 +1,9 @@
 package com.qa.demo.systemController;
 
+import com.qa.demo.answerAnalysis.AnswerAnalysisDriverImpl;
 import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.DataSource;
+import com.qa.demo.dataStructure.QueryTuple;
 import com.qa.demo.dataStructure.Question;
 import com.qa.demo.ontologyProcess.TDBCrudDriver;
 import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
@@ -69,7 +71,34 @@ public class NewFaqDemo {
             //从模板的同义词集合中查询（模板分词之后形成的同义词集合），泛化主要功能；
             KbqaQueryDriver OpenKBQADriver = new OpenKBQA();
             question = OpenKBQADriver.kbQueryAnswers(question);
+            //对答案进行排序
+            AnswerAnalysisDriverImpl analysisDriver = new AnswerAnalysisDriverImpl();
+            question = analysisDriver.rankAnswerCandidate(question);
 
+            //生成答案并返回
+            question = analysisDriver.returnAnswer(question);
+
+            //输出答案
+            System.out.println("系统作答：");
+            System.out.println(question.getReturnedAnswer().getAnswerString().trim());
+            if(question.getReturnedAnswer().getAnswerString().trim().contains
+                    ("我还得再想想"))
+            {
+                LOG.error("[error] 用户输入的问题为： " + input);
+                LOG.error("[error] 问题无法回答");
+                for(QueryTuple t : question.getQueryTuples())
+                {
+                    LOG.error("[error] 返回模板为：");
+                    LOG.error(t.toString());
+                }
+                LOG.error("[error] 处理完成");
+            }
+            else{
+                LOG.info("[info] 用户输入的问题为： " + input);
+                LOG.info("[info] 系统作答：");
+                LOG.info("[info] " + question.getReturnedAnswer().getAnswerString().trim());
+                LOG.info("[info] 处理完成");
+            }
 
             LOG.info(question.toString());
         }

@@ -1,10 +1,7 @@
 package com.qa.demo.query;
 
 import com.qa.demo.algorithm.EditingDistance;
-import com.qa.demo.dataStructure.DataSource;
-import com.qa.demo.dataStructure.Entity;
-import com.qa.demo.dataStructure.Question;
-import com.qa.demo.dataStructure.Triplet;
+import com.qa.demo.dataStructure.*;
 import com.qa.demo.questionAnalysis.QuestionAnalysisDriver;
 import com.qa.demo.questionAnalysis.QuestionAnalysisDriverImpl;
 import com.qa.demo.utils.w2v.Result;
@@ -52,32 +49,50 @@ public class OpenKBQA implements KbqaQueryDriver {
         }
         List<Triplet> tripletList = new ArrayList<>(set);
         q.setTripletList(tripletList);
+
         return q;
     }
 
     private Question calSimilarity(Question q){
         HashMap<Entity,ArrayList<String>> questionToken = q.getQuestionToken();
         HashMap<Triplet,HashMap<String,List<Double>>> questionTokenTripletSim = new HashMap<>();
+        ArrayList<Answer> answers = new ArrayList<>();
+        if (q.getTripletList() == null || q.getTripletList().isEmpty()){
+            q.setCandidateAnswer(answers);
+            return q;
+        }
 
-        for(Triplet triplet: q.getTripletList()){
+        for(Triplet triplet: q.getTripletList()){ // 这个循环的是所有三元组
             String predicateName = triplet.getPredicateURI().split("/")[triplet.getPredicateURI().split("/").length-1];
+            String objectName = triplet.getObjectURI().split("/")[triplet.getObjectURI().split("/").length-1];
             Iterator<Map.Entry<Entity,ArrayList<String>>> it = questionToken.entrySet().iterator();
             HashMap<String,List<Double>> preSim = new HashMap<>();
-            while (it.hasNext()) {
+            Answer ans = new Answer();
+            double score = 0;
+            while (it.hasNext()) { // 这个循环的是问题里所有非实体的词
                 Map.Entry<Entity,ArrayList<String>> entry = it.next();
+
                 for (String entryName:  entry.getValue()){
-                    // 计算相似度
+                    // 计算相似度 **新疆小麦的分布和颜色？** 新疆小麦对应三元组谓词有：中文名，产地等 这里计算的是中文名和分布的相似度
                     double word_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"word");
                     double char_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"character");
                     double dis_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"distance");
+                    double total_sim = word_sim + char_sim + dis_sim; // 不同的相似度区间不一样  直接加0.0待优化啊
                     System.out.println("三元组里的谓词:" + predicateName + " 问题里非实体词:" + entryName
                             + " 词相似:" + word_sim+ " 字相似:" + char_sim+ " 距离相似:" + dis_sim);
-                    List<Double> list = Arrays.asList(word_sim, char_sim, dis_sim);
+                    List<Double> list = Arrays.asList(word_sim, char_sim, dis_sim, total_sim);
+                    score += total_sim;
                     preSim.put(entryName,list);
                 }
             }
+            ans.setAnswerTriplet(Collections.singletonList(triplet));
+            ans.setAnswerScore(score);
+            ans.setAnswerString(objectName);
+            ans.setAnswerSource("net");
+            answers.add(ans);
             questionTokenTripletSim.put(triplet,preSim);
         }
+        q.setCandidateAnswer(answers);
         q.setQuestionTokenTripletSim(questionTokenTripletSim);
         return q;
     }
