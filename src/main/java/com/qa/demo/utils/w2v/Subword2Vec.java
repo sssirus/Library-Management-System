@@ -10,19 +10,6 @@ import com.qa.demo.utils.w2v.Word2VEC;
 
 import static com.qa.demo.conf.FileConfig.*;
 
-/**
- * @author J.Y.Zhang
- * @create 2018-03-30
- * Function description:
- * 子字向量对未登录词做处理
- **/
-class Result {
-    public String word = "";
-    public List<String> subwords_for_check = new ArrayList<String>();
-    public int label = 0;
-    double[] vec = null;
-}
-
 public class Subword2Vec {
 
     //计算词对应字的向量
@@ -48,9 +35,9 @@ public class Subword2Vec {
                         result.vec = sum(vsum, result.vec);
                     }
                     int r;
-                    for (r = 0; r < 200; r++) {
-                        System.out.print(vsum[r]);
-                    }
+//                    for (r = 0; r < 200; r++) {
+//                        System.out.print(vsum[r]);
+//                    }
 
                 } else {
                     System.out.print("This word not in subword list!");
@@ -163,24 +150,24 @@ public class Subword2Vec {
             if(subwordsplus.contains(word.substring(0, length - i)+"@@") && subwordsplus.contains(word.substring(length - i, length))){
                 subwordresult = subwordresult + word.substring(0,length - i) + "@@ ";
                 subwordresult = subwordresult + word.substring(length - i, length);
-                System.out.println(subwordresult + " :1");
+//                System.out.println(subwordresult + " :1");
                 return subwordresult;
             }
             else if(subwordsplus.contains(word.substring(0, length - i)+"@@") && !subwordsplus.contains(word.substring(length - i, length))) {
                 subwordresult = subwordresult + word.substring(0, length - i) + "@@ ";
                 subwordresultcut = check_subwords(word.substring(length - i, length));
                 subwordresult = subwordresult + subwordresultcut;
-                System.out.println(subwordresult + " :2");
+//                System.out.println(subwordresult + " :2");
                 return subwordresult;
             }
             else if(!subwordsplus.contains(word.substring(0,length - i)+"@@") && subwordsplus.contains(word.substring(length - i, length))){
                 subwordresultcut = check_subwords(word.substring(0,length - i));
                 subwordresult = subwordresult + subwordresultcut + "@@ ";
                 subwordresult = subwordresult + word.substring(length - i, length);
-                System.out.println(subwordresult + " :3");
+//                System.out.println(subwordresult + " :3");
                 return subwordresult.replaceAll("  ", " ");
             } else {
-                System.out.println(word.substring(0,length - i) + "@@ and " + word.substring(length - i, length) + " not in subword list");
+//                System.out.println(word.substring(0,length - i) + "@@ and " + word.substring(length - i, length) + " not in subword list");
                 continue;
             }
         }
