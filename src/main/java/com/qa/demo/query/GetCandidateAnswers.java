@@ -16,24 +16,28 @@ import java.util.Map;
 import static com.qa.demo.conf.Configuration.*;
 
 /**
- * Created time: 2017_09_08
- * Author: Devin Hua
- * Function description: 通过分析的实体和模板等，从KB中得到候选答案。
- * The main driver interface for get candidate answers from KB.
+ *  Created time: 2017_09_08
+ *  Author: Devin Hua
+ *  Function description: 通过分析的实体和模板等，从KB中得到候选答案。
+ *  The main driver interface for get candidate answers from KB.
  */
 
 public class GetCandidateAnswers {
 
-    private static ArrayList<Answer> _getCandidateAnswers(Question q, DataSource p) {
+    private static ArrayList<Answer> _getCandidateAnswers(Question q, DataSource p)
+    {
         ArrayList<Answer> answers = new ArrayList<>();
         ArrayList<Triplet> triplets = KGTripletsClient.getInstance().getKgTriplets();
         ArrayList<QueryTuple> tuples = q.getQueryTuples();
-        if (tuples.isEmpty() || tuples == null)
+        if(tuples.isEmpty()||tuples==null)
             return answers;
-        for (QueryTuple tuple : tuples) {
-            for (Triplet triplet : triplets) {
-                if (triplet.getSubjectURI().equalsIgnoreCase(tuple.getSubjectEntity().getEntityURI())
-                        && triplet.getPredicateName().equalsIgnoreCase(tuple.getPredicate().getKgPredicateName())) {
+        for(QueryTuple tuple : tuples)
+        {
+            for(Triplet triplet : triplets)
+            {
+                if(triplet.getSubjectURI().equalsIgnoreCase(tuple.getSubjectEntity().getEntityURI())
+                        &&triplet.getPredicateName().equalsIgnoreCase(tuple.getPredicate().getKgPredicateName()))
+                {
                     Answer answer = new Answer();
                     answer.setAnswerString(triplet.getObjectName());
                     ArrayList<Triplet> answertriplets = new ArrayList<>();
@@ -53,19 +57,21 @@ public class GetCandidateAnswers {
         ArrayList<QueryTuple> tuples = q.getQueryTuples();
         if (tuples.isEmpty() || tuples == null)
             return answers;
-        for (QueryTuple tuple : tuples) {
+        for (QueryTuple tuple : tuples)
+        {
             String subject_uri = tuple.getSubjectEntity().getEntityURI();
             String predicate_uri = "";
-            if (subject_uri.contains("zhwiki"))
+            if(subject_uri.contains("zhwiki"))
                 predicate_uri = PREDICATE_PREFIX_WIKI + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("hudongbaike"))
+            else if(subject_uri.contains("hudongbaike"))
                 predicate_uri = PREDICATE_PREFIX_HUDONG + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("baidubaike"))
+            else if(subject_uri.contains("baidubaike"))
                 predicate_uri = PREDICATE_PREFIX_BAIDU + tuple.getPredicate().getKgPredicateName();
             else
                 continue;
             ArrayList<String> objects = SparqlQuery.getObject(subject_uri, predicate_uri);
-            for (String object : objects) {
+            for (String object : objects)
+            {
                 Answer answer = new Answer();
                 answer.setAnswerString(object);
                 ArrayList<Triplet> answertriplets = new ArrayList<>();
@@ -86,30 +92,31 @@ public class GetCandidateAnswers {
     }
 
 
+
     /**
      * create by j.y.zhang
      * getCandidateAnswers from allgregrograph
-     *
      * @param q
      * @param p
      * @return
      */
-    private static ArrayList<Answer> _getAllgregraphCandidateAnswers(Question q, DataSource p) {
+    private static ArrayList<Answer> _getAllgregraphCandidateAnswers(Question q, DataSource p){
         //System.out.println("_getAllgregraphCandidateAnswers");
         ArrayList<Answer> answers = new ArrayList<>();
         ArrayList<QueryTuple> tuples = q.getQueryTuples();
         if (tuples.isEmpty() || tuples == null)
             return answers;
-        for (QueryTuple tuple : tuples) {
+        for (QueryTuple tuple : tuples)
+        {
             String subject_uri = tuple.getSubjectEntity().getEntityURI();
             String predicate_uri = "";
-            if (subject_uri.contains("zhwiki"))
+            if(subject_uri.contains("zhwiki"))
                 predicate_uri = PREDICATE_PREFIX_WIKI + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("hudongbaike"))
+            else if(subject_uri.contains("hudongbaike"))
                 predicate_uri = PREDICATE_PREFIX_HUDONG + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("baidubaike"))
+            else if(subject_uri.contains("baidubaike"))
                 predicate_uri = PREDICATE_PREFIX_BAIDU + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("caas"))
+            else if(subject_uri.contains("caas"))
                 predicate_uri = PREDICATE_PREFIX_CAAS + tuple.getPredicate().getKgPredicateName();
             else
                 continue;
@@ -119,7 +126,8 @@ public class GetCandidateAnswers {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            for (String object : objects) {
+            for (String object : objects)
+            {
                 Answer answer = new Answer();
                 answer.setAnswerString(object);
                 ArrayList<Triplet> answertriplets = new ArrayList<>();
@@ -140,7 +148,9 @@ public class GetCandidateAnswers {
 
     }
 
-    public static Question getCandidateAnswers(Question q, DataSource p) {
+    public static Question getCandidateAnswers(Question q, DataSource p)
+    {
+        //TODO: 在这里修改获得实体的方式
 
        /* ArrayList<Answer> answers = _getTDBCandidateAnswers(q, p);
         ArrayList<Answer> results = (ArrayList<Answer>)q.getCandidateAnswer();
@@ -154,9 +164,10 @@ public class GetCandidateAnswers {
 
 
         ArrayList<Answer> answers = _getWebServiceCandidateAnswers(q, p);
-        ArrayList<Answer> results = (ArrayList<Answer>) q.getCandidateAnswer();
+        ArrayList<Answer> results = (ArrayList<Answer>)q.getCandidateAnswer();
         //如果没有候选答案则返回一个默认答案同时将分数置为0；
-        if (!answers.isEmpty() || answers != null) {
+        if(!answers.isEmpty()||answers!=null)
+        {
             results.addAll(answers);
         }
         q.setCandidateAnswer(results);
@@ -167,42 +178,50 @@ public class GetCandidateAnswers {
 
     /**
      * 获得以 entity 为主语或宾语的候选三元组
-     * <p>
+     * 如果 entity 的 uri 是 url 形式的，则查询四次，否则查询两次
      * entity 为主语
      * entity 为宾语
      * entity 对应的实体名字为主语
      * entity 对应的实体名字为宾语
      * 然后将前置 uri 换成其他的前置 uri 继续查询
-     * <p>
-     * 返回所有不同的结果
+     * 返回所有结果
      *
      * @param entity entity
      * @return 以 entity 为主语或宾语的候选三元组
      */
-    public static List<Triplet> getCandidateTripletsByEntity(Entity entity) {
+    public static List<Triplet> getCandidateTripletsByEntity(Entity entity){
+
+        // PREDICATE_PREFIX_WIKI
+        // PREDICATE_PREFIX_HUDONG
+        // PREDICATE_PREFIX_BAIDU
+        // PREDICATE_PREFIX_CAAS
 
         String uri = entity.getEntityURI();
         Triplet triplet = new Triplet();
-        uri = uri.substring(uri.lastIndexOf('/') + 1);
+        List<Triplet> tripletList = getCandidateTripletsByEntityFromWebService(triplet, uri);
 
+        if(uri.lastIndexOf('/') != -1){
 
-        List<Triplet> tripletList;
+            uri = uri.substring(uri.lastIndexOf('/') + 1);
+            tripletList.addAll(getCandidateTripletsByEntityFromWebService(triplet, uri));
 
-        List<String> subjects = new ArrayList<>();
-        subjects.add(uri);
-        subjects.add(ENTITY_PREFIX_BAIDU + uri);
-        subjects.add(ENTITY_PREFIX + uri);
-        subjects.add(ENTITY_PREFIX_CAAS + uri);
-        subjects.add(ENTITY_PREFIX_HUDONG + uri);
+            if(!entity.getEntityURI().contains(PREDICATE_PREFIX_WIKI)){
+                tripletList.addAll(getCandidateTripletsByEntityFromWebService(triplet, PREDICATE_PREFIX_WIKI + "/" + uri));
+            }
+            if(!entity.getEntityURI().contains(PREDICATE_PREFIX_HUDONG)){
+                tripletList.addAll(getCandidateTripletsByEntityFromWebService(triplet, PREDICATE_PREFIX_HUDONG + "/" + uri));
+            }
+            if(!entity.getEntityURI().contains(PREDICATE_PREFIX_BAIDU)){
+                tripletList.addAll(getCandidateTripletsByEntityFromWebService(triplet, PREDICATE_PREFIX_BAIDU + "/" + uri));
+            }
+            if(!entity.getEntityURI().contains(PREDICATE_PREFIX_CAAS)){
+                tripletList.addAll(getCandidateTripletsByEntityFromWebService(triplet, PREDICATE_PREFIX_CAAS + "/" + uri));
+            }
 
-        tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
-
-        List<String> objects = subjects;
-
-        tripletList.addAll(WebServiceAccessor.queryByMultiObjects(objects));
+        }
 
         List<Triplet> ret = new ArrayList<>();
-        for (Triplet triplet1 : tripletList) {
+        for(Triplet triplet1 : tripletList) {
             if (!ret.contains(triplet1))
                 ret.add(triplet1);
         }
@@ -210,20 +229,38 @@ public class GetCandidateAnswers {
     }
 
     /**
+     * 通过实体 uri 来查询所有对应的三元组 - 子程序
+     * 负责访问 WebService 接口
+     * @param triplet
+     * @param uri
+     * @return 服务器查询结果
+     */
+    private static List<Triplet> getCandidateTripletsByEntityFromWebService(Triplet triplet, String uri) {
+        triplet.setSubjectURI(null);
+        triplet.setObjectURI(uri);
+        List<Triplet> ret = new ArrayList<>(WebServiceAccessor.query(triplet));
+
+        triplet.setSubjectURI(uri);
+        triplet.setObjectURI(null);
+        ret.addAll(WebServiceAccessor.query(triplet));
+
+        return ret;
+    }
+    /**
      * create by Weizhuo Li
      * getCandidateAnswers with Intention
-     *
      * @param q
      * @param p
      * @return q
      */
     //基于答案的词性以及特殊的tokens对答案进行筛选
-    public static Question getCandidateAnswersWithIntention(Question q, DataSource p) {
+    public static Question getCandidateAnswersWithIntention(Question q, DataSource p)
+    {
         ArrayList<Answer> answers = _getTDBCandidateAnswers(q, p);
-        ArrayList<Answer> results = (ArrayList<Answer>) q.getCandidateAnswer();
+        ArrayList<Answer> results = (ArrayList<Answer>)q.getCandidateAnswer();
         //如果没有候选答案则返回一个默认答案同时将分数置为0；
         String intention = q.getQuestionIntention();
-        if (!answers.isEmpty() || answers != null) {
+        if(!answers.isEmpty()||answers!=null) {
             if (intention.equalsIgnoreCase("when") || intention.equalsIgnoreCase("who") || intention.equalsIgnoreCase("num")) {
                 for (Answer ans : answers) {
                     String ansString = ans.getAnswerString();
@@ -267,7 +304,8 @@ public class GetCandidateAnswers {
             }
             //其他情况不做考虑，因为可能会遗漏答案：
             //例如：稻曲病的为害部位是哪? 答案分词为：穗 j 部 q  与 String string="花生产于哪里？";  前者答案词性的情况无法完全覆盖
-            else {
+            else
+            {
                 results.addAll(answers);
             }
         }
@@ -282,22 +320,24 @@ public class GetCandidateAnswers {
         ArrayList<QueryTuple> tuples = q.getQueryTuples();
         if (tuples == null || tuples.isEmpty())
             return answers;
-        for (QueryTuple tuple : tuples) {
+        for (QueryTuple tuple : tuples)
+        {
             String subject_uri = tuple.getSubjectEntity().getEntityURI();
             String predicate_uri = "";
             //System.out.println(tuple.getSubjectEntity().getEntityURI());
-            if (subject_uri.contains("zhwiki"))
+            if(subject_uri.contains("zhwiki"))
                 predicate_uri = PREDICATE_PREFIX_WIKI + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("hudongbaike"))
+            else if(subject_uri.contains("hudongbaike"))
                 predicate_uri = PREDICATE_PREFIX_HUDONG + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("baidubaike"))
+            else if(subject_uri.contains("baidubaike"))
                 predicate_uri = PREDICATE_PREFIX_BAIDU + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("caas"))
+            else if(subject_uri.contains("caas"))
                 predicate_uri = PREDICATE_PREFIX_CAAS + tuple.getPredicate().getKgPredicateName();
             else
                 continue;
             ArrayList<String> objects = TDBQuery.getObject(subject_uri, predicate_uri);
-            for (String object : objects) {
+            for (String object : objects)
+            {
                 Answer answer = new Answer();
                 answer.setAnswerString(object);
                 ArrayList<Triplet> answertriplets = new ArrayList<>();
@@ -318,12 +358,6 @@ public class GetCandidateAnswers {
     }
 
 
-    /**
-     * 访问 WebService
-     * @param q
-     * @param p
-     * @return
-     */
     private static ArrayList<Answer> _getWebServiceCandidateAnswers(Question q, DataSource p) {
 
         ArrayList<Answer> answers = new ArrayList<>();
@@ -331,17 +365,18 @@ public class GetCandidateAnswers {
 
         if (tuples == null || tuples.isEmpty())
             return answers;
-        for (QueryTuple tuple : tuples) {
+        for (QueryTuple tuple : tuples)
+        {
             String subject_uri = tuple.getSubjectEntity().getEntityURI();
             String predicate_uri;
 
-            if (subject_uri.contains("zhwiki"))
+            if(subject_uri.contains("zhwiki"))
                 predicate_uri = PREDICATE_PREFIX_WIKI + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("hudongbaike"))
+            else if(subject_uri.contains("hudongbaike"))
                 predicate_uri = PREDICATE_PREFIX_HUDONG + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("baidubaike"))
+            else if(subject_uri.contains("baidubaike"))
                 predicate_uri = PREDICATE_PREFIX_BAIDU + tuple.getPredicate().getKgPredicateName();
-            else if (subject_uri.contains("caas"))
+            else if(subject_uri.contains("caas"))
                 predicate_uri = PREDICATE_PREFIX_CAAS + tuple.getPredicate().getKgPredicateName();
             else
                 continue;
@@ -349,7 +384,8 @@ public class GetCandidateAnswers {
             query_triplet.setSubjectURI(subject_uri);
             query_triplet.setPredicateURI(predicate_uri);
             List<Triplet> tripletList = WebServiceAccessor.query(query_triplet);
-            for (Triplet t : tripletList) {
+            for(Triplet t : tripletList)
+            {
                 String object_uri = t.getObjectURI();
                 Answer answer = new Answer();
                 answer.setAnswerString(object_uri);
