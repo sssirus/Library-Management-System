@@ -125,5 +125,10 @@ public class FileConfig {
 
     //别名词典；
     public static final String ALIAS_DICTIONARY = "src/main/resources/data/templateRepository/aliasDict.txt";
+    //字向量相关；
+    public static String normalwordsVector = "src/main/resources/data/WordVector/subWord2Vec/library/normalwordsVector";
+    public static String subwordsVector = "src/main/resources/data/WordVector/subWord2Vec/library/subwordsVector";
+    public static String wiki5000seg = "src/main/resources/data/WordVector/subWord2Vec/json/wiki5000.seg.txt.json";
+    public static String wiki5000segbpe = "src/main/resources/data/WordVector/subWord2Vec/json/wiki5000.seg.bpe.txt.json";
 
 }
