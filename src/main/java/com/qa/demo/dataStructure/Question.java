@@ -4,6 +4,8 @@ package com.qa.demo.dataStructure;
  * 系统中表示问题及相关信息的数据结构；
  */
 
+import org.eclipse.rdf4j.query.algebra.In;
+
 import java.util.*;
 
 public class Question {
@@ -48,6 +50,12 @@ public class Question {
 
     //查询二元组;
     private ArrayList<QueryTuple> queryTuples = null;
+
+    // 根据问题中实体查询的到的相关三元组
+    private List<Triplet> tripletList = null;
+
+    // 问题中其余部分和实体对应三元组里谓词的相似度
+    private HashMap<Triplet,HashMap<String,List<Double>>> questionTokenTripletSim = null;
 
     public String getQuestionString() {
         return questionString;
@@ -213,4 +221,20 @@ public class Question {
         this.acturalAnswer = acturalAnswer;
     }
 
+    public List<Triplet> getTripletList() {
+        return tripletList;
+    }
+
+    public void setTripletList(List<Triplet> tripletList) {
+        this.tripletList = tripletList;
+    }
+
+    public HashMap<Triplet, HashMap<String, List<Double>>> getQuestionTokenTripletSim() {
+        return questionTokenTripletSim;
+    }
+
+    public void setQuestionTokenTripletSim(HashMap<Triplet, HashMap<String, List<Double>>> questionTokenTripletSim) {
+        this.questionTokenTripletSim = questionTokenTripletSim;
+    }
 }
+
