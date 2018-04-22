@@ -2,15 +2,13 @@ package com.qa.demo.systemController;
 
 import com.qa.demo.answerAnalysis.AnswerAnalysisDriverImpl;
 import com.qa.demo.conf.Configuration;
-import com.qa.demo.dataStructure.DataSource;
-import com.qa.demo.dataStructure.QueryTuple;
-import com.qa.demo.dataStructure.Question;
+import com.qa.demo.conf.FileConfig;
+import com.qa.demo.dataStructure.*;
 import com.qa.demo.ontologyProcess.TDBCrudDriver;
 import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
-import com.qa.demo.query.ALGQuerySynonymKBQA;
-import com.qa.demo.query.KbqaQueryDriver;
-import com.qa.demo.query.OpenKBQA;
+import com.qa.demo.query.*;
 import com.qa.demo.utils.es.IndexFile;
+import com.qa.demo.utils.io.IOTool;
 import org.apache.log4j.PropertyConfigurator;
 import org.bytedeco.javacpp.Loader;
 import org.nd4j.nativeblas.Nd4jCpu;
@@ -18,6 +16,7 @@ import org.nlpcn.commons.lang.util.logging.Log;
 import org.nlpcn.commons.lang.util.logging.LogFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import static com.qa.demo.conf.FileConfig.LOG_PROPERTY;
@@ -31,30 +30,7 @@ import static com.qa.demo.conf.FileConfig.W2V_file;
 public class NewFaqDemo {
     public static final Log LOG = LogFactory.getLog(NewFaqDemo.class);
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-
-        try {
-            Loader.load(Nd4jCpu.class);
-        } catch (UnsatisfiedLinkError e) {
-            String path = Loader.cacheResource(Nd4jCpu.class, "windows-x86_64/jniNd4jCpu.dll").getPath();
-            new ProcessBuilder(W2V_file, path).start().waitFor();
-        }
-
-//        PropertyConfigurator.configure(LOG_PROPERTY);
-//        //系统初始化操作：es建立索引
-//        //SYNONYM为分词之后的模板；
-//        IndexFile.indexFaqData(DataSource.SYNONYM);
-//        //为19000条百科知识的索引；
-//        IndexFile.indexEncyclopediaData(DataSource.ENCYCLOPEDIA);
-//        //FAQ为常用问答对的索引；PATTERN为模板的索引;FAQ_T为生成的所有问题的模板；
-//        IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN);
-//        LOG.info(" [info]已建立faq索引！");
-//
-//        TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
-//        tdbCrudDriver.loadTDBModel();
-//        LOG.info(" [info]已建立TDB MODEL，系统初始化完成！");
-
-
+    public static void testByInput(){
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入问题，换行表示输入下一题，‘#’结束");
         while (true) {
@@ -68,10 +44,10 @@ public class NewFaqDemo {
             }
             Question question = new Question(input);
 
-            //从模板的同义词集合中查询（模板分词之后形成的同义词集合），泛化主要功能；
+            //
             KbqaQueryDriver OpenKBQADriver = new OpenKBQA();
             question = OpenKBQADriver.kbQueryAnswers(question);
-            //对答案进行排序
+            // 对答案进行排序
             AnswerAnalysisDriverImpl analysisDriver = new AnswerAnalysisDriverImpl();
             question = analysisDriver.rankAnswerCandidate(question);
 
@@ -102,5 +78,163 @@ public class NewFaqDemo {
 
             LOG.info(question.toString());
         }
+    }
+
+    public static  void testByFiles(){
+        //取得问题集合;
+        ArrayList<Question> questions = IOTool.getQuestionsFromTripletGeneratedQuestionFile();
+
+        ArrayList<String> outputs = new ArrayList<>();
+        String stringtemp = "";
+        String question_string = "";
+        int count = 0;
+        int wrongCount = 0;
+        double rightAnswerCount = 0;
+        int noAnswerCount = 0;
+        long startMili=System.currentTimeMillis();// 当前时间对应的毫秒数
+
+        for(Question q:questions) {
+            String qstring = q.getQuestionString();
+            if (qstring == "" || qstring == null){
+                break;
+            }
+            for(String punctuation : Configuration.PUNCTUATION_SET)
+            {
+                qstring = qstring.replace(punctuation,"");
+            }
+            q.setQuestionString(qstring);
+            question_string = qstring;
+
+            count++;
+            //
+            KbqaQueryDriver OpenKBQADriver = new OpenKBQA();
+            q = OpenKBQADriver.kbQueryAnswers(q);
+            // 对答案进行排序
+            AnswerAnalysisDriverImpl analysisDriver = new AnswerAnalysisDriverImpl();
+            q = analysisDriver.rankAnswerCandidate(q);
+
+            //生成答案并返回
+            q = analysisDriver.returnAnswer(q);
+
+            stringtemp = "question "+ count+": " + question_string + "\r\n";
+            System.out.print(stringtemp);
+
+            outputs.add(stringtemp);
+            String returnedAnswer = q.getReturnedAnswer().getAnswerString().trim();
+            String acturalAnswer = q.getActuralAnswer();
+
+            stringtemp = "Actural answer is: "+acturalAnswer + "\r\n";
+            System.out.print(stringtemp);
+            outputs.add(stringtemp);
+
+            stringtemp = "Returned answer is: "+returnedAnswer + "\r\n";
+            System.out.print(stringtemp);
+            outputs.add(stringtemp);
+
+            stringtemp = "Answer source is: "+q.getReturnedAnswer().getAnswerSource() + "\r\n";
+            System.out.print(stringtemp);
+            outputs.add(stringtemp);
+
+            int flag = 0;
+            String flag_string = "";
+            if(returnedAnswer.contains(acturalAnswer)){
+                rightAnswerCount++;
+                flag = 1;
+            }
+            else if(returnedAnswer.contains("我还得再想想，以后再告诉你")){
+                noAnswerCount++;
+                flag = 0;
+            }
+            else{
+                wrongCount++;
+                flag = -1;
+            }
+
+            switch(flag)
+            {
+                case 0 :
+                    flag_string = "无答案";
+                    break;
+                case 1:
+                    flag_string = "正确答案";
+                    break;
+                case -1:
+                    flag_string = "错误答案";
+                    for(Answer answer : q.getCandidateAnswer())
+                    {
+                        stringtemp = "Candidate Answer: " + answer.getAnswerString() + "\r\n";
+                        System.out.print(stringtemp);
+                        outputs.add(stringtemp);
+                        if(answer.getAnswerTriplet()!=null&&!answer.getAnswerTriplet().isEmpty())
+                        {
+                            for(Triplet triplet : answer.getAnswerTriplet())
+                            {
+                                stringtemp = "Subject: " + triplet.getSubjectURI() + "\r\n";
+                                System.out.print(stringtemp);
+                                outputs.add(stringtemp);
+                                stringtemp = "Predicate: " + triplet.getPredicateURI() + "\r\n";
+                                System.out.print(stringtemp);
+                                outputs.add(stringtemp);
+                                stringtemp = "Object: " + triplet.getObjectName() + "\r\n";
+                                System.out.print(stringtemp);
+                                outputs.add(stringtemp);
+                                stringtemp = "Score: " + answer.getAnswerScore() + "\r\n";
+                                System.out.print(stringtemp);
+                                outputs.add(stringtemp);
+                            }
+                        }
+                    }
+                    break;
+                default :
+                    flag_string = "无答案";
+                    break;
+            }
+
+
+            stringtemp = "Answer result is: " + flag_string + "\r\n";
+            System.out.print(stringtemp);
+            outputs.add(stringtemp);
+
+            stringtemp = "------------------------------------------------------\r\n";
+            System.out.print(stringtemp);
+            outputs.add(stringtemp);
+        }
+        long endMili=System.currentTimeMillis();
+        stringtemp = "共回答"+(count-1)+"道问题\r\n";
+        System.out.print(stringtemp);
+        outputs.add(stringtemp);
+
+        stringtemp = "未回答数为： "+noAnswerCount + "\r\n";
+        System.out.print(stringtemp);
+        outputs.add(stringtemp);
+
+        stringtemp = "正确率为： "+(double)(rightAnswerCount/count)*100+"%" + "\r\n";
+        System.out.print(stringtemp);
+        outputs.add(stringtemp);
+
+        stringtemp = "总耗时为："+((endMili-startMili)/1000.0)+"秒" + "\r\n";
+        System.out.print(stringtemp);
+        outputs.add(stringtemp);
+
+        try {
+            IOTool.writeToFile(outputs, "src/main/resources/data/newdemo_result_charvec.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+
+        try {
+            Loader.load(Nd4jCpu.class);
+        } catch (UnsatisfiedLinkError e) {
+            String path = Loader.cacheResource(Nd4jCpu.class, "windows-x86_64/jniNd4jCpu.dll").getPath();
+            new ProcessBuilder(W2V_file, path).start().waitFor();
+        }
+
+        //testByInput();
+        testByFiles();
+
+
     }
 }

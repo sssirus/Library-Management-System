@@ -399,7 +399,8 @@ public class WebServiceAccessor {
                 if(object.length() == 4){
                     object = triplet.getObjectURI();
                 }else {
-                    object = URLDecoder.decode(object.substring(2, object.length() - 2), "UTF-8");
+                    // .replaceAll("%(?![0-9a-fA-F]{2})", "%25") add by yaoleo to fix bug: java.lang.IllegalArgumentException: URLDecoder: Illegal hex characters in escape (%)
+                    object = URLDecoder.decode(object.substring(2, object.length() - 2).replaceAll("%(?![0-9a-fA-F]{2})", "%25"), "UTF-8");
                 }
             }
             Triplet t = new Triplet();
