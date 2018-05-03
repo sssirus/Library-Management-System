@@ -211,7 +211,7 @@ public class NewFaqDemo {
         outputs.add(stringtemp);
 
         try {
-            IOTool.writeToFile(outputs, "src/main/resources/data/newdemo_result200.txt");
+            IOTool.writeToFile(outputs, "src/main/resources/data/newdemo_result.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
