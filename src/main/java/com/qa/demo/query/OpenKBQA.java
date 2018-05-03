@@ -61,10 +61,14 @@ public class OpenKBQA implements KbqaQueryDriver {
             q.setCandidateAnswer(answers);
             return q;
         }
-
+        HashMap<List<String>,List<Double>> map = new HashMap<>();
         for(Triplet triplet: q.getTripletList()){ // 这个循环的是所有三元组
+            if(triplet.getObjectURI()==null || triplet.getPredicateURI()==null) break;
+            if(triplet.getObjectURI().split("/").length < 1 || triplet.getPredicateURI().split("/").length < 1) break;
             String predicateName = triplet.getPredicateURI().split("/")[triplet.getPredicateURI().split("/").length-1];
             String objectName = triplet.getObjectURI().split("/")[triplet.getObjectURI().split("/").length-1];
+            if(predicateName == "" || objectName == "") break;
+
             Iterator<Map.Entry<Entity,ArrayList<String>>> it = questionToken.entrySet().iterator();
             HashMap<String,List<Double>> preSim = new HashMap<>();
             Answer ans = new Answer();
@@ -73,16 +77,33 @@ public class OpenKBQA implements KbqaQueryDriver {
                 Map.Entry<Entity,ArrayList<String>> entry = it.next();
 
                 for (String entryName:  entry.getValue()){
-                    // 计算相似度 **新疆小麦的分布和颜色？** 新疆小麦对应三元组谓词有：中文名，产地等 这里计算的是中文名和分布的相似度
-                    double word_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"word");
-                    double char_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"character");
-                    double dis_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"distance");
-                    double total_sim = word_sim + char_sim + dis_sim; // 不同的相似度区间不一样  直接加0.0待优化啊
-                    System.out.println("三元组里的谓词:" + predicateName + " 问题里非实体词:" + entryName
-                            + " 词相似:" + word_sim+ " 字相似:" + char_sim+ " 距离相似:" + dis_sim);
-                    List<Double> list = Arrays.asList(word_sim, char_sim, dis_sim, total_sim);
-                    score += total_sim;
-                    preSim.put(entryName,list);
+
+
+                    List<String> ss = Arrays.asList(predicateName,entryName);
+                    if(!map.containsKey(ss)){// 避免重复计算
+                        // 计算相似度 **新疆小麦的分布和颜色？** 新疆小麦对应三元组谓词有：中文名，产地等 这里计算的是中文名和分布的相似度
+                        double word_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"word");
+                        double char_sim = 0;// 太慢了！！
+                        //double char_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"character");
+                        double dis_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"distance");
+                        double total_sim = word_sim + char_sim + dis_sim; // 不同的相似度区间不一样  直接加0.0待优化啊
+                        System.out.println("三元组里的谓词:" + predicateName + " 问题里非实体词:" + entryName
+                                + " 词相似:" + word_sim+ " 字相似:" + char_sim+ " 距离相似:" + dis_sim);
+
+
+                        List<Double> list = Arrays.asList(word_sim, char_sim, dis_sim, total_sim);
+                        score += total_sim;
+                        preSim.put(entryName,list);
+
+                        map.put(ss,list);
+                    }else{
+                        score = map.get(ss).get(3);
+                        preSim.put(entryName,map.get(ss));
+                    }
+
+
+
+
                 }
             }
             ans.setAnswerTriplet(Collections.singletonList(triplet));
