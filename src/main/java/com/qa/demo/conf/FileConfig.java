@@ -11,7 +11,7 @@ public class FileConfig {
     public static final String FILE_FAQ_T = "src/main/resources/data/QAQuestionFromKbUTF8.txt";
     public static final String FILE_TRIPLET_FAQ_SAMPLE = "src/main/resources/data/QAQuestionFromKbSample.txt";
     public static final String QUESTION_FOR_TEST = "src/main/resources/data/QuestionForTest.txt";
-    public static final String QUESTION_FOR_TEST2 = "src/main/resources/data/QuestionForTest2.txt";//open
+    public static final String QUESTION_FOR_TEST2 = "src/main/resources/data/QuestionForTest2_200.txt";//open
 
     //整理问答对的原始文件
     public static final String FILE_QUESTION = "src/main/resources/data/QAQuestionSamples.txt";

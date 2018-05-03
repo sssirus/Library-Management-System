@@ -17,6 +17,7 @@ import org.nlpcn.commons.lang.util.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import static com.qa.demo.conf.FileConfig.LOG_PROPERTY;
@@ -118,8 +119,25 @@ public class NewFaqDemo {
 
             stringtemp = "question "+ count+": " + question_string + "\r\n";
             System.out.print(stringtemp);
-
             outputs.add(stringtemp);
+
+            HashSet<String> triplets = new HashSet<>();
+            String tripletsString = "";
+            for(Triplet triplet: q.getTripletList()){
+                if (!triplets.contains(triplet.getSubjectURI())){
+                    triplets.add(triplet.getSubjectURI());
+                    tripletsString+=triplet.getSubjectURI();
+                    tripletsString+=",";
+                }
+
+
+            }
+
+
+            stringtemp = "找到的相关三元组："+ tripletsString + "\r\n";
+            System.out.print(stringtemp);
+            outputs.add(stringtemp);
+
             String returnedAnswer = q.getReturnedAnswer().getAnswerString().trim();
             String acturalAnswer = q.getActuralAnswer();
 
@@ -160,30 +178,6 @@ public class NewFaqDemo {
                     break;
                 case -1:
                     flag_string = "错误答案";
-                    for(Answer answer : q.getCandidateAnswer())
-                    {
-                        stringtemp = "Candidate Answer: " + answer.getAnswerString() + "\r\n";
-                        System.out.print(stringtemp);
-                        outputs.add(stringtemp);
-                        if(answer.getAnswerTriplet()!=null&&!answer.getAnswerTriplet().isEmpty())
-                        {
-                            for(Triplet triplet : answer.getAnswerTriplet())
-                            {
-                                stringtemp = "Subject: " + triplet.getSubjectURI() + "\r\n";
-                                System.out.print(stringtemp);
-                                outputs.add(stringtemp);
-                                stringtemp = "Predicate: " + triplet.getPredicateURI() + "\r\n";
-                                System.out.print(stringtemp);
-                                outputs.add(stringtemp);
-                                stringtemp = "Object: " + triplet.getObjectName() + "\r\n";
-                                System.out.print(stringtemp);
-                                outputs.add(stringtemp);
-                                stringtemp = "Score: " + answer.getAnswerScore() + "\r\n";
-                                System.out.print(stringtemp);
-                                outputs.add(stringtemp);
-                            }
-                        }
-                    }
                     break;
                 default :
                     flag_string = "无答案";
@@ -217,7 +211,7 @@ public class NewFaqDemo {
         outputs.add(stringtemp);
 
         try {
-            IOTool.writeToFile(outputs, "src/main/resources/data/newdemo_result_charvec.txt");
+            IOTool.writeToFile(outputs, "src/main/resources/data/newdemo_result200.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
