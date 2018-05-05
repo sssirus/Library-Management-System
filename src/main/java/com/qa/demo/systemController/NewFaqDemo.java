@@ -18,6 +18,7 @@ import org.nlpcn.commons.lang.util.logging.LogFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
 
 import static com.qa.demo.conf.FileConfig.LOG_PROPERTY;
@@ -63,11 +64,7 @@ public class NewFaqDemo {
             {
                 LOG.error("[error] 用户输入的问题为： " + input);
                 LOG.error("[error] 问题无法回答");
-                for(QueryTuple t : question.getQueryTuples())
-                {
-                    LOG.error("[error] 返回模板为：");
-                    LOG.error(t.toString());
-                }
+
                 LOG.error("[error] 处理完成");
             }
             else{
@@ -81,9 +78,7 @@ public class NewFaqDemo {
         }
     }
 
-    public static  void testByFiles(){
-        //取得问题集合;
-        ArrayList<Question> questions = IOTool.getQuestionsFromTripletGeneratedQuestionFile();
+    public static  void testByFiles(List<Question> questions, int i){
 
         ArrayList<String> outputs = new ArrayList<>();
         String stringtemp = "";
@@ -92,10 +87,12 @@ public class NewFaqDemo {
         int wrongCount = 0;
         double rightAnswerCount = 0;
         int noAnswerCount = 0;
+        int noEntityCount = 0;
+        int rightTripletCount = 0;
         long startMili=System.currentTimeMillis();// 当前时间对应的毫秒数
 
         for(Question q:questions) {
-            String qstring = q.getQuestionString();
+            String qstring = q.getQuestionString().replace(" ","");
             if (qstring == "" || qstring == null){
                 break;
             }
@@ -121,21 +118,36 @@ public class NewFaqDemo {
             System.out.print(stringtemp);
             outputs.add(stringtemp);
 
+            if(q.getQuestionEntity().size() == 0){
+                noEntityCount += 1;
+            }
+            stringtemp = "找的实体是： ";
+            for(Entity entity: q.getQuestionEntity()){
+                stringtemp += entity.getKgEntityName();
+                stringtemp += " ";
+            }
+            stringtemp += "\r\n";
+            System.out.print(stringtemp);
+            outputs.add(stringtemp);
+
             HashSet<String> triplets = new HashSet<>();
             String tripletsString = "";
-            for(Triplet triplet: q.getTripletList()){
-                if (!triplets.contains(triplet.getSubjectURI())){
-                    triplets.add(triplet.getSubjectURI());
-                    tripletsString+=triplet.getSubjectURI();
-                    tripletsString+=",";
-                }
 
+            for(Triplet triplet: q.getTripletList()){
+                tripletsString+=triplet.getPredicateURI().substring(triplet.getPredicateURI().lastIndexOf("/")+1);
+                tripletsString+=" :: ";
+                tripletsString+=triplet.getObjectURI();
+                tripletsString+="\r\n";
 
             }
 
-
-            stringtemp = "找到的相关三元组："+ tripletsString + "\r\n";
-            System.out.print(stringtemp);
+            if(tripletsString.contains(q.getActuralAnswer())){
+                stringtemp  = "找到的相关三元组有正确答案\r\n"+tripletsString;
+                rightTripletCount += 1;
+            }else{
+                stringtemp  = "找到的相关三元组没有正确答案\r\n";
+            }
+            System.out.println(stringtemp);
             outputs.add(stringtemp);
 
             String returnedAnswer = q.getReturnedAnswer().getAnswerString().trim();
@@ -194,13 +206,22 @@ public class NewFaqDemo {
             outputs.add(stringtemp);
         }
         long endMili=System.currentTimeMillis();
-        stringtemp = "共回答"+(count-1)+"道问题\r\n";
+        stringtemp = "共回答"+(count)+"道问题\r\n";
         System.out.print(stringtemp);
         outputs.add(stringtemp);
 
         stringtemp = "未回答数为： "+noAnswerCount + "\r\n";
         System.out.print(stringtemp);
         outputs.add(stringtemp);
+
+        stringtemp = "找到的三元组有正确答案的有： "+ rightTripletCount + "\r\n";
+        System.out.print(stringtemp);
+        outputs.add(stringtemp);
+
+        stringtemp = "没找到实体的有： "+ noEntityCount + "\r\n";
+        System.out.print(stringtemp);
+        outputs.add(stringtemp);
+
 
         stringtemp = "正确率为： "+(double)(rightAnswerCount/count)*100+"%" + "\r\n";
         System.out.print(stringtemp);
@@ -211,7 +232,7 @@ public class NewFaqDemo {
         outputs.add(stringtemp);
 
         try {
-            IOTool.writeToFile(outputs, "src/main/resources/data/newdemo_result.txt");
+            IOTool.writeToFile(outputs, "src/main/resources/data/newdemo_result_" + i+".txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -227,8 +248,13 @@ public class NewFaqDemo {
         }
 
         //testByInput();
-        testByFiles();
 
+        //取得问题集合;
+        ArrayList<Question> questions = IOTool.getQuestionsFromTripletGeneratedQuestionFile();
 
+        int times = questions.size()/100;
+        for(int i = 0; i < times; i++){
+            testByFiles(questions.subList(i*100,(i+1)*100), i);
+        }
     }
 }

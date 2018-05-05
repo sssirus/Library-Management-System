@@ -21,7 +21,7 @@ public class KGTripletsClient {
     //单例模式;
     private KGTripletsClient()
     {
-        this.kgTriplets = KBTripletBasedQuestionGeneration.generateTriplets(FileConfig.DATATYPE_PROPERTY_TRIPLETS_FILE);
+        this.kgTriplets = KBTripletBasedQuestionGeneration.generateTriplets(FileConfig.ZHWIKI_TRIPLETS_FILE); //// test for openkb 原来是：DATATYPE_PROPERTY_TRIPLETS_FILE
         ArrayList<Triplet> triplets = KBTripletBasedQuestionGeneration.generateTriplets(FileConfig.OBJECT_PROPERTY_TRIPLETS_FILE);
         this.kgTriplets.addAll(triplets);
     }
