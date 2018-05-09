@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,41 +16,28 @@ import static org.junit.jupiter.api.Assertions.*;
 class WebServiceAccessorTest {
     @Test
     void query() {
-
-        // 作为载体的三元组
         Triplet triplet = new Triplet();
-        // triplet.setSubjectURI("http://zhishi.me/hudongbaike/resource/新疆小麦");
-        triplet.setPredicateURI("http://zhishi.me/baidubaike/property/分布区域");
-        // triplet.setObjectURI("彼得巴甫洛夫小麦");
-        // 存放结果
         List<Triplet> tripletList = null;
-
-        // 进行请求
-        /*tripletList = WebServiceAccessor.query(triplet);
-        List<String> list = new ArrayList<>();
-        list.add("彼得巴甫洛夫小麦");
-        list.add("北半球的高寒地带");
-        // tripletList = WebServiceAccessor.queryByMultiObjects(list);
-        System.out.println(tripletList.size());
-        if (tripletList.size() == 0)
-            return;
-        System.out.println(tripletList.get(tripletList.size() - 1).getSubjectURI());
-        System.out.println(tripletList.get(tripletList.size() - 1).getPredicateURI());
-        System.out.println(tripletList.get(tripletList.size() - 1).getObjectURI());*/
-
         List<String> subjects = new ArrayList<>();
-        subjects.add("http://zhishi.me/hudongbaike/resource/新疆小麦");
-        subjects.add("http://zhishi.me/hudongbaike/resource/CW400");
+        // subjects.add("http://zhishi.me/hudongbaike/resource/苹果");
+        // subjects.add("http://zhishi.me/hudongbaike/resource/乔治·奥韦尔");
+        // subjects.add("苹果");
+        subjects.add("中国");
+        // triplet.setSubjectURI("中国");
+        triplet.setObjectURI("中国");
+        // subjects.add("http://zhishi.me/hudongbaike/resource/CW400");
 
-        tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
+        // tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
+        // tripletList = WebServiceAccessor.queryByMultiObjects(subjects);
+        tripletList = WebServiceAccessor.query(triplet);
         System.out.println();
         System.out.println(tripletList.size());
-        if (tripletList.size() == 0)
-            return;
-        System.out.println(tripletList.get(tripletList.size() - 1).getSubjectURI());
-        System.out.println(tripletList.get(tripletList.size() - 1).getPredicateURI());
-        System.out.println(tripletList.get(tripletList.size() - 1).getObjectURI());
-
+        for(Triplet t : tripletList){
+            System.out.println();
+            System.out.println(t.getSubjectURI());
+            System.out.println(t.getPredicateURI());
+            System.out.println(t.getObjectURI());
+        }
     }
 
 }
