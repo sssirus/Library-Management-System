@@ -356,6 +356,84 @@ public class WebServiceAccessor {
         return sparql;
     }
 
+/**
+     * 将返回的 json 数据解析为 List<Triplet>
+     *
+     * @param triplet 查询三元组
+     * @param json json 数据
+     * @return 解析后的三元组链表
+     */
+    private List<Triplet> _analysisJson_backup(Triplet triplet, String json) throws UnsupportedEncodingException {
+
+        List<Triplet> tripletList = new ArrayList<>();
+
+        // 用于匹配外部的 json
+        // 匹配格式为：["subject","predict","object"]
+        Pattern external = Pattern.compile("\\[(.*?)\\]");
+
+        // 用于匹配内部的 json
+        // 格式为："subject/predict/object" 
+        Pattern internal = Pattern.compile("(\"<.*?>\")|(null)|(\"\\\\\".*?\\\\\"\")");
+
+        Matcher external_matcher = external.matcher(json);
+        Matcher internal_matcher;
+
+        String subject = null, predict = null, object = null;
+        // json = json.replaceAll("@zh", "");
+        // System.out.println(json);
+        if(json.contains("#<end-of-file"))
+            return null;
+
+        // 过滤第一个匹配 ["s", "p", "o"]
+        external_matcher.find();
+        // 此时没有返回结果
+        if(json.substring(json.indexOf(external_matcher.group()) + external_matcher.group().length()).length() < 30)
+            return tripletList;
+        while (external_matcher.find()) {
+            String internal_string = external_matcher.group();
+            internal_string = internal_string.replaceAll("\\\\\"@.*?\"", "\\\\\"\"");
+            // System.out.println(internal_string);
+            internal_matcher = internal.matcher(internal_string);
+            while(internal_matcher.find()){
+                subject = internal_matcher.group().replaceAll("\\\\\"", "\"");
+                if(subject.length() == 4){
+                    subject = triplet.getSubjectURI();
+                }else{
+                    subject = URLDecoder.decode(subject.substring(2, subject.length() - 2), "UTF-8");
+                }
+
+                internal_matcher.find();
+                predict = internal_matcher.group().replaceAll("\\\\\"", "\"");
+                if(predict.length() == 4){
+                    predict = triplet.getPredicateURI();
+                }else {
+                    predict = URLDecoder.decode(predict.substring(2, predict.length() - 2), "UTF-8");
+                }
+
+                internal_matcher.find();
+                object = internal_matcher.group().replaceAll("\\\\\"", "\"")
+                        .replaceAll("\\\\\\\\", "\\\\");
+                if(object.length() == 4){
+                    object = triplet.getObjectURI();
+                }else {
+                    // .replaceAll("%(?![0-9a-fA-F]{2})", "%25") add by yaoleo to fix bug: java.lang.IllegalArgumentException: URLDecoder: Illegal hex characters in escape (%)
+                    object = URLDecoder.decode(object.substring(2, object.length() - 2).replaceAll("%(?![0-9a-fA-F]{2})", "%25"), "UTF-8");
+                }
+            }
+            Triplet t = new Triplet();
+            t.setSubjectURI(URLDecoder.decode(subject, "UTF-8"));
+            t.setPredicateURI(URLDecoder.decode(predict, "UTF-8"));
+            t.setObjectURI(_decode_unicode(object));
+            // System.out.println(subject);
+            // System.out.println(predict);
+            // System.out.println(object);
+            tripletList.add(t);
+
+        }
+
+        return tripletList;
+    }
+
     /**
      * 登录服务器
      *
