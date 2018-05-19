@@ -204,7 +204,7 @@ class GetCandidateAnswersTest {
         // 作为载体的三元组
         Triplet triplet = new Triplet();
         Entity entity = new Entity();
-        entity.setEntityURI("http://zhishi.me/hudongbaike/resource/新疆小麦");
+        entity.setEntityURI("http://zhishi.me/hudongbaike/resource/柏峪乡");
 
         // 存放结果
         List<Triplet> tripletList = null;

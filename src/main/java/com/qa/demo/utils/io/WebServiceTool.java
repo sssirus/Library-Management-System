@@ -73,7 +73,7 @@ public class WebServiceTool {
 
         // 用于匹配外部的 json
         // 匹配格式为：["subject","predict","object"]
-        Pattern external = Pattern.compile("\\[(.*?)\\]");
+        Pattern external = Pattern.compile("\\[(.*?)\"\\]");
 
         // 用于匹配内部的 json
         // 格式为："subject/predict/object"

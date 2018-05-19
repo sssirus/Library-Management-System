@@ -47,6 +47,9 @@ public class Configuration {
     //表示实体名称的互动百科语义空间前缀，例如:<http://zhishi.me/hudongbaike/resource/新疆小麦>
     public static final String ENTITY_PREFIX_HUDONG = "http://zhishi.me/hudongbaike/resource/";
 
+    //表示实体名称的互动百科语义空间前缀，例如:<http://zhishi.me/hudongbaike/resource/新疆小麦>
+    public static final String ENTITY_PREFIX_WIKI = "http://zhishi.me/zhwiki/resource/";
+
     //表示谓词名称的baidu语义空间前缀，例如:<http://zhishi.me/baidubaike/property/中文名>；
     public static final String PREDICATE_PREFIX_BAIDU = "http://zhishi.me/baidubaike/property/";
 
