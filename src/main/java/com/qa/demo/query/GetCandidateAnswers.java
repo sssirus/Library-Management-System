@@ -194,6 +194,7 @@ public class GetCandidateAnswers {
         subjects.add(ENTITY_PREFIX + uri);
         subjects.add(ENTITY_PREFIX_CAAS + uri);
         subjects.add(ENTITY_PREFIX_HUDONG + uri);
+        subjects.add(ENTITY_PREFIX_WIKI + uri);
 
         tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
 

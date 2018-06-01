@@ -59,6 +59,13 @@ public class NewFaqDemo {
             //输出答案
             System.out.println("系统作答：");
             System.out.println(question.getReturnedAnswer().getAnswerString().trim());
+            String candidateString = "#############\r\n";
+            for(Answer candidateAnswer:question.getCandidateAnswer()){
+                String preUri = candidateAnswer.getAnswerTriplet().get(0).getPredicateURI();
+                candidateString += preUri.substring(preUri.lastIndexOf("/")+1);
+                candidateString += "::(" + candidateAnswer.getAnswerScore()+") ::  "+ candidateAnswer.getAnswerString() + "\r\n";
+                if(candidateAnswer.getAnswerString() == null || candidateAnswer.getAnswerString().length() == 0) continue;
+            }
             if(question.getReturnedAnswer().getAnswerString().trim().contains
                     ("我还得再想想"))
             {
@@ -72,6 +79,7 @@ public class NewFaqDemo {
                 LOG.info("[info] 系统作答：");
                 LOG.info("[info] " + question.getReturnedAnswer().getAnswerString().trim());
                 LOG.info("[info] 处理完成");
+                LOG.info("[info] " + candidateString);
             }
 
             LOG.info(question.toString());
@@ -131,18 +139,31 @@ public class NewFaqDemo {
             outputs.add(stringtemp);
 
             HashSet<String> triplets = new HashSet<>();
-            String tripletsString = "";
-
-            for(Triplet triplet: q.getTripletList()){
-                tripletsString+=triplet.getPredicateURI().substring(triplet.getPredicateURI().lastIndexOf("/")+1);
-                tripletsString+=" :: ";
-                tripletsString+=triplet.getObjectURI();
-                tripletsString+="\r\n";
-
+            String tripletsString = "#############\r\n";
+            int containflag = 0;
+//            for(Triplet triplet: q.getTripletList()){
+//                tripletsString+=triplet.getPredicateURI().substring(triplet.getPredicateURI().lastIndexOf("/")+1);
+//                tripletsString+=" :: ";
+//                tripletsString+=triplet.getObjectURI();
+//                tripletsString+="\r\n";
+//                if(triplet.getObjectURI() == null || triplet.getObjectURI().length() == 0) break;
+//                if(triplet.getObjectURI().contains(q.getActuralAnswer())){
+//                    containflag = 1;
+//                }
+//            }
+            String candidateString = "#############\r\n";
+            for(Answer candidateAnswer:q.getCandidateAnswer()){
+                String preUri = candidateAnswer.getAnswerTriplet().get(0).getPredicateURI();
+                candidateString += preUri.substring(preUri.lastIndexOf("/")+1);
+                candidateString += "::(" + candidateAnswer.getAnswerScore()+") ::  "+ candidateAnswer.getAnswerString() + "\r\n";
+                if(candidateAnswer.getAnswerString() == null || candidateAnswer.getAnswerString().length() == 0) break;
+                if(candidateAnswer.getAnswerString().contains(q.getActuralAnswer())){
+                    containflag = 1;
+                }
             }
 
-            if(tripletsString.contains(q.getActuralAnswer())){
-                stringtemp  = "找到的相关三元组有正确答案\r\n"+tripletsString;
+            if(containflag == 1){
+                stringtemp  = "找到的相关三元组有正确答案\r\n";
                 rightTripletCount += 1;
             }else{
                 stringtemp  = "找到的相关三元组没有正确答案\r\n";
@@ -167,7 +188,7 @@ public class NewFaqDemo {
 
             int flag = 0;
             String flag_string = "";
-            if(returnedAnswer.contains(acturalAnswer)){
+            if(returnedAnswer.contains(acturalAnswer) || acturalAnswer.contains(returnedAnswer)){
                 rightAnswerCount++;
                 flag = 1;
             }
@@ -189,7 +210,7 @@ public class NewFaqDemo {
                     flag_string = "正确答案";
                     break;
                 case -1:
-                    flag_string = "错误答案";
+                    flag_string = "错误答案\r\n"  +candidateString;
                     break;
                 default :
                     flag_string = "无答案";
@@ -198,6 +219,7 @@ public class NewFaqDemo {
 
 
             stringtemp = "Answer result is: " + flag_string + "\r\n";
+
             System.out.print(stringtemp);
             outputs.add(stringtemp);
 
@@ -247,14 +269,16 @@ public class NewFaqDemo {
             new ProcessBuilder(W2V_file, path).start().waitFor();
         }
 
-        //testByInput();
+//        testByInput();
 
         //取得问题集合;
         ArrayList<Question> questions = IOTool.getQuestionsFromTripletGeneratedQuestionFile();
 
         int times = questions.size()/100;
-        for(int i = 0; i < times; i++){
+
+        for(int i = 6; i < times; i++){
             testByFiles(questions.subList(i*100,(i+1)*100), i);
+            System.out.println("wenjian--"+i);
         }
     }
 }
