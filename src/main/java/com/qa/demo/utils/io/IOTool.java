@@ -70,7 +70,7 @@ public class IOTool {
         ArrayList<String> stringList = new  ArrayList<>();
         ArrayList<Question> questionList = new ArrayList<>();
         try {
-            stringList = ExtractQuestionsFromText.readLinesFromFile(FileConfig.QUESTION_FOR_TEST2);
+            stringList = ExtractQuestionsFromText.readLinesFromFile(FileConfig.QUESTION_FOR_TEST);
         } catch (IOException e) {
             e.printStackTrace();
         }

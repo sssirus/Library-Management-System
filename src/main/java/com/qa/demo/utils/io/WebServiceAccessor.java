@@ -485,7 +485,7 @@ public class WebServiceAccessor {
      */
     private String _request(HttpClient httpClient, String sparql, Repository repository) throws URISyntaxException, IOException {
         String url = "http://120.77.215.39:10035/catalogs/zhishime/repositories/" + repository;
-        url += "?query=" + sparql + "&queryLn=SPARQL&limit=100&infer=false";
+        url += "?query=" + sparql + "&queryLn=SPARQL&limit=500&infer=false";
         // System.out.println(url);
         HttpPost httpPost = new HttpPost();
         httpPost.setURI(new URI(url));
