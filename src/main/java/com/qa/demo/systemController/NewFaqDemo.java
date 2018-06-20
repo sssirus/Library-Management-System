@@ -269,15 +269,21 @@ public class NewFaqDemo {
             new ProcessBuilder(W2V_file, path).start().waitFor();
         }
 
-//        testByInput();
+        //testByInput();
 
         //取得问题集合;
         ArrayList<Question> questions = IOTool.getQuestionsFromTripletGeneratedQuestionFile();
 
         int times = questions.size()/100;
+        int timess = questions.size()%100;
+// 是什么_____隐讳号的项目符号是什么？_____•_____<http://zhishi.me/zhwiki/resource/隐讳号>_____<http://zhishi.me/zhwiki/property/项目符号>_____•
+// 是什么_____新海诚动漫《你的名字》由哪个公司出品？_____<东宝株式会社>_____<http://zhishi.me/zhwiki/resource/subject>_____<http://zhishi.me/zhwiki/property/predict>_____<东宝株式会社>
+        for(int i = 0; i <= times; i++){
+            if(i == times) testByFiles(questions.subList(i*100,(i*100+timess)),i);
+            else{
+                testByFiles(questions.subList(i*100,(i+1)*100), i);
+            }
 
-        for(int i = 6; i < times; i++){
-            testByFiles(questions.subList(i*100,(i+1)*100), i);
             System.out.println("wenjian--"+i);
         }
     }

@@ -144,6 +144,8 @@ public class WebServiceTool {
         }
 
         Triplet t = new Triplet();
+        subject = subject.replaceAll("%(?![0-9a-fA-F]{2})", "%25"); // add by yaoleo
+        predict = predict.replaceAll("%(?![0-9a-fA-F]{2})", "%25");
         t.setSubjectURI(URLDecoder.decode(subject, "UTF-8"));
         t.setPredicateURI(URLDecoder.decode(predict, "UTF-8"));
         t.setObjectURI(_decode_unicode(object));
