@@ -27,8 +27,8 @@ class TopologicalPatternMatchTest {
 //        String posSequence = "eng uj b n v r";
 
 
-        System.out.println(TopologicalPatternMatch.getInstance()
-                .getPredicateMention(posSequence, sentence));
+//        System.out.println(TopologicalPatternMatch.getInstance()
+//                .getPredicateMention(posSequence, sentence));
 
         System.out.println(TopologicalPatternMatch.getInstance().getParseTreeString(sentence));
         String subtreeString = TopologicalPatternMatch.getInstance().extractSubTree(posSequence, sentence);
