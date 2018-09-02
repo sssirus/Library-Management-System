@@ -10,6 +10,7 @@ import com.qa.demo.utils.w2v.Result;
 import com.qa.demo.utils.w2v.Word2VecGensimModel;
 import org.elasticsearch.common.collect.Tuple;
 
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -33,11 +34,15 @@ public class OpenKBQA implements KbqaQueryDriver {
 
         //取得问题分析器驱动；
         QuestionAnalysisDriver qAnalysisDriver = new QuestionAnalysisDriverImpl();
+        System.out.println("entity");
         q = qAnalysisDriver.nerQuestion(q);
+        System.out.println("token");
         q = qAnalysisDriver.segmentationQuestion(q);
         // 得到所有以问题中实体为主语或宾语的所有相关三元组
+        System.out.println("triplets");
         q = this.getCandidateTriplets(q);
         // 计算三元组里的谓词和问题除了实体以外部分的相似度
+        System.out.println("sim");
         q = this.calSimilarityWithWeight(q);
 
         return q;
