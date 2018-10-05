@@ -7,8 +7,9 @@ import com.qa.demo.dataStructure.DataSource;
 import com.qa.demo.dataStructure.Entity;
 import com.qa.demo.dataStructure.Question;
 import com.qa.demo.utils.es.GetClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -33,7 +34,7 @@ import static com.qa.demo.conf.Configuration.QUERY_HIT_SIZE;
  * Created by TT. Wu on 2017/9/4.
  */
 public class QueryFaq implements DbqaQueryDriver {
-    private static Logger LOG = LogManager.getLogger(QueryFaq.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(QueryFaq.class);
 
     /**
      * 将检索得到的“候选答案”封装至Question对象中，
@@ -98,7 +99,7 @@ public class QueryFaq implements DbqaQueryDriver {
             //解析
 //            List<Evidence> evidenceList = new ArrayList<>();
             List<Answer> answerList = new ArrayList<>();
-            LOG.info("[info]候选答案集大小为："+ searchResponse.getHits().totalHits);
+            logger.info("[info]候选答案集大小为："+ searchResponse.getHits().totalHits);
             //Scroll until no hits are returned
             do {
                 for (SearchHit hit : searchResponse.getHits().getHits()) {
@@ -131,12 +132,12 @@ public class QueryFaq implements DbqaQueryDriver {
             //封装
 //            question.setQuestionEvidence(evidenceList);
             question.setCandidateAnswer(answerList);
-            LOG.info("[info]已从FAQ中检索相关文本证据");
+            logger.info("[info]已从FAQ中检索相关文本证据");
             return question;
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
-            LOG.error("[error]while query faq");
+            logger.error("[error]while query faq");
         }
 
         return question;

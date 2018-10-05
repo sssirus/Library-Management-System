@@ -5,8 +5,8 @@ import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.Question;
 import com.qa.demo.ontologyProcess.TDBCrudDriver;
 import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.bytedeco.javacpp.Loader;
 import org.nd4j.nativeblas.Nd4jCpu;
 
@@ -17,7 +17,8 @@ import static com.qa.demo.conf.FileConfig.W2V_file;
 
 public class TPTest {
 
-    private static Logger LOG = LogManager.getLogger(TPTest.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(TPTest.class);
+
 
     public static void main(String[] args) throws IOException {
 
@@ -34,7 +35,7 @@ public class TPTest {
 
         TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
         tdbCrudDriver.loadTDBModel();
-        LOG.info((" [info]已建立TDB MODEL，系统初始化完成！"));
+        logger.info((" [info]已建立TDB MODEL，系统初始化完成！"));
 
         //String string="花生什么时候种植?";
         //String string="王绶是哪个民族的";  //民族 n

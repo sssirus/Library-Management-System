@@ -23,6 +23,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.qa.demo.utils.io.TripletReader.getTripletsFromNT_Triplets;
 import static com.qa.demo.utils.io.WebServiceTool.*;
@@ -38,7 +40,8 @@ import static java.lang.Thread.sleep;
 public class WebServiceAccessor {
     private static final WebServiceAccessor webServiceAccessor = new WebServiceAccessor();
     private List<Triplet> tripletList = null;
-
+    private static final Logger infologger = LoggerFactory.getLogger("queryLoggerInfo");
+    private static final Logger logger = LoggerFactory.getLogger(WebServiceAccessor.class);
 
     // 查询所属仓库
     private enum Repository {
@@ -50,7 +53,7 @@ public class WebServiceAccessor {
             tripletList = getTripletsFromNT_Triplets(FileConfig.NT_TRIPLETS);
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("读取文件失败！");
+            logger.error("读取文件失败！");
         }
     }
 
@@ -239,7 +242,7 @@ public class WebServiceAccessor {
                 endFlag = true;
             } catch (IOException e) {
                 --cnt;
-                System.err.println("传输出错，正在重试");
+                logger.error("传输出错，正在重试");
 
                 try {
                     sleep(500);
@@ -247,12 +250,12 @@ public class WebServiceAccessor {
                 }
 
             } catch (URISyntaxException e) {
-                System.err.println("网页 URI 错误");
+                logger.error("网页 URI 错误");
                 assert false;
             }
         } while (!endFlag && cnt != 0);
         if (cnt == 0) {
-            System.err.println("重试次数达到限制，传输失败！");
+            logger.error("重试次数达到限制，传输失败！");
         }
         return tripletList;
     }
@@ -354,7 +357,7 @@ public class WebServiceAccessor {
         sparql = "select ?s ?p ?o " + "{" + subject_uri + " " + predict_uri + " " + object_uri
                 + " " + filter + "}";
 
-        System.out.println(sparql);
+        infologger.info(sparql);
 
         return sparql;
     }

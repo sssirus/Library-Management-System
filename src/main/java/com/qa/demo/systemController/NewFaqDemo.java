@@ -9,7 +9,7 @@ import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
 import com.qa.demo.query.*;
 import com.qa.demo.utils.es.IndexFile;
 import com.qa.demo.utils.io.IOTool;
-import org.apache.log4j.PropertyConfigurator;
+
 import org.bytedeco.javacpp.Loader;
 import org.nd4j.nativeblas.Nd4jCpu;
 import org.nlpcn.commons.lang.util.logging.Log;
@@ -21,7 +21,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
-import static com.qa.demo.conf.FileConfig.LOG_PROPERTY;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static com.qa.demo.conf.FileConfig.W2V_file;
 
 /**
@@ -30,8 +32,9 @@ import static com.qa.demo.conf.FileConfig.W2V_file;
  * Function description:
  **/
 public class NewFaqDemo {
-    public static final Log LOG = LogFactory.getLog(NewFaqDemo.class);
 
+    private static final Logger infologger = LoggerFactory.getLogger("queryLoggerInfo");
+    private static final Logger errorlogger = LoggerFactory.getLogger("queryLoggerError");
     public static void testByInput(){
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入问题，换行表示输入下一题，‘#’结束");
@@ -52,6 +55,12 @@ public class NewFaqDemo {
             // 对答案进行排序
             AnswerAnalysisDriverImpl analysisDriver = new AnswerAnalysisDriverImpl();
             question = analysisDriver.rankAnswerCandidate(question);
+            //输出候选答案
+            infologger.info("候选答案：");
+            for(int i=0;i<question.getCandidateAnswer().size();i++)
+            {
+                infologger.info(i +"\t"+question.getCandidateAnswer().get(i).toString());
+            }
 
             //生成答案并返回
             question = analysisDriver.returnAnswer(question);
@@ -69,20 +78,23 @@ public class NewFaqDemo {
             if(question.getReturnedAnswer().getAnswerString().trim().contains
                     ("我还得再想想"))
             {
-                LOG.error("[error] 用户输入的问题为： " + input);
-                LOG.error("[error] 问题无法回答");
+                errorlogger.error("[error] 用户输入的问题为： " + input);
+                errorlogger.error("[error] 问题无法回答");
 
-                LOG.error("[error] 处理完成");
+                errorlogger.error("[error] 处理完成");
             }
             else{
-                LOG.info("[info] 用户输入的问题为： " + input);
-                LOG.info("[info] 系统作答：");
-                LOG.info("[info] " + question.getReturnedAnswer().getAnswerString().trim());
-                LOG.info("[info] 处理完成");
-                LOG.info("[info] " + candidateString);
+                infologger.info("[info] 用户输入的问题为： " + input);
+
+
+
+                infologger.info("[info] 系统作答："+ question.getReturnedAnswer().getAnswerString().trim());
+
+                infologger.info("[info] 处理完成");
+                infologger.info("[info] " + candidateString);
             }
 
-            LOG.info(question.toString());
+            infologger.info(question.toString());
         }
     }
 

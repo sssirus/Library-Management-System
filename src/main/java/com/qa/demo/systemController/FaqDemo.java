@@ -10,7 +10,8 @@ import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
 import com.qa.demo.query.*;
 import com.qa.demo.questionAnalysis.Segmentation;
 import com.qa.demo.utils.es.IndexFile;
-import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.bytedeco.javacpp.Loader;
 import org.nd4j.nativeblas.Nd4jCpu;
 import org.nlpcn.commons.lang.util.logging.Log;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
-import static com.qa.demo.conf.FileConfig.LOG_PROPERTY;
+
 import static com.qa.demo.conf.FileConfig.W2V_file;
 
 /**
@@ -30,9 +31,10 @@ import static com.qa.demo.conf.FileConfig.W2V_file;
  */
 public class FaqDemo {
 
-    public static final Log LOG = LogFactory.getLog(FaqDemo.class);
+    private static final Logger logger = LoggerFactory.getLogger(FaqDemo.class);
 //    private static Logger LOG = LogManager.getLogger(FaqDemo.class.getName());
-
+    private static final Logger infologger = LoggerFactory.getLogger("queryLoggerInfo");
+    private static final Logger errorlogger = LoggerFactory.getLogger("queryLoggerError");
     public static void main(String[] args) throws IOException, InterruptedException {
 
         try {
@@ -42,7 +44,7 @@ public class FaqDemo {
             new ProcessBuilder(W2V_file, path).start().waitFor();
         }
 
-        PropertyConfigurator.configure(LOG_PROPERTY);
+
         //系统初始化操作：es建立索引
         //SYNONYM为分词之后的模板；
         IndexFile.indexFaqData(DataSource.SYNONYM);
@@ -52,11 +54,11 @@ public class FaqDemo {
 //      IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN, DataSource.FAQ_T);
         IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN);
 //      IndexFile.indexFaqData(DataSource.FAQ);
-        LOG.info(" [info]已建立faq索引！");
+        logger.info(" [info]已建立faq索引！");
 
         TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
         tdbCrudDriver.loadTDBModel();
-        LOG.info(" [info]已建立TDB MODEL，系统初始化完成！");
+        logger.info(" [info]已建立TDB MODEL，系统初始化完成！");
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入问题，换行表示输入下一题，‘#’结束");
@@ -121,25 +123,25 @@ public class FaqDemo {
             if(question.getReturnedAnswer().getAnswerString().trim().contains
                     ("我还得再想想"))
             {
-                LOG.error("[error] 用户输入的问题为： " + input);
-                LOG.error("[error] 问题无法回答");
+                errorlogger.error("[error] 用户输入的问题为： " + input);
+                errorlogger.error("[error] 问题无法回答");
                 for(QueryTuple t : question.getQueryTuples())
                 {
-                    LOG.error("[error] 返回模板为：");
-                    LOG.error(t.toString());
+                    errorlogger.error("[error] 返回模板为：");
+                    errorlogger.error(t.toString());
                 }
-                LOG.error("[error] 处理完成");
+                errorlogger.error("[error] 处理完成");
             }
             else{
-                LOG.info("[info] 用户输入的问题为： " + input);
-                LOG.info("[info] 系统作答：");
-                LOG.info("[info] " + question.getReturnedAnswer().getAnswerString().trim());
+                infologger.info("[info] 用户输入的问题为： " + input);
+                infologger.info("[info] 系统作答：");
+                infologger.info("[info] " + question.getReturnedAnswer().getAnswerString().trim());
 //                for(QueryTuple t : question.getQueryTuples())
 //                {
 //                    LOG.info("[info] 返回模板为：");
 //                    LOG.info(t.toString());
 //                }
-                LOG.info("[info] 处理完成");
+                logger.info("[info] 处理完成");
             }
         }
         scanner.close();

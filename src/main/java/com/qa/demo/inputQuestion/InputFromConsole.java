@@ -1,9 +1,8 @@
 package com.qa.demo.inputQuestion;
 
 import com.qa.demo.dataStructure.Question;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,7 +13,7 @@ import java.util.Scanner;
  * Created by TT. Wu on 2017/9/3.
  */
 public class InputFromConsole implements InputDriver {
-    private static Logger LOG = LogManager.getLogger(InputFromConsole.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(InputFromConsole.class.getName());
 
     /**
      * 从命令行中输入单个的问题，封装成Question对象返回。
@@ -25,7 +24,7 @@ public class InputFromConsole implements InputDriver {
         System.out.println("请输入问题:");
         String input = scanner.next();
         Question question = new Question(input);
-        LOG.info("[info]问题已输入，等待系统处理");
+        logger.info("[info]问题已输入，等待系统处理");
         scanner.close();
         return question;
     }
@@ -47,7 +46,7 @@ public class InputFromConsole implements InputDriver {
                 questions.add(question);
             }
         }
-        LOG.info("[log info]问题输入完成，等待系统处理");
+        logger.info("[log info]问题输入完成，等待系统处理");
         scanner.close();
         return questions;
     }

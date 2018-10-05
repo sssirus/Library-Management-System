@@ -108,7 +108,7 @@ public class FileConfig {
     public static final String NT_TRIPLETS = "src/main/resources/data/kbfile/NT_triplets.nt";
 
     //设置log文件的参数文件所在的位置；
-    public static final String LOG_PROPERTY = "src/main/resources/log4j.properties";
+   // public static final String LOG_PROPERTY = "src/main/resources/log4j.properties";
 
     //设置TDB文件的位置；
     public static final String TDB = "src/main/resources/data/kbfile/TDB";

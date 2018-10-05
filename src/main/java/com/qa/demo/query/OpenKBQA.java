@@ -9,6 +9,8 @@ import com.qa.demo.questionAnalysis.Segmentation;
 import com.qa.demo.utils.w2v.Result;
 import com.qa.demo.utils.w2v.Word2VecGensimModel;
 import org.elasticsearch.common.collect.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.io.FileNotFoundException;
@@ -28,21 +30,22 @@ import static com.qa.demo.utils.w2v.Subword2Vec.check_words;
  *  结果分别存储在Question结构中的tripletList和questionTokenTripletSim中
  **/
 public class OpenKBQA implements KbqaQueryDriver {
-
+    private static final Logger infologger = LoggerFactory.getLogger("queryLoggerInfo");
+    private static final Logger logger = LoggerFactory.getLogger(OpenKBQA.class);
     @Override
     public Question kbQueryAnswers(Question q) {
 
         //取得问题分析器驱动；
         QuestionAnalysisDriver qAnalysisDriver = new QuestionAnalysisDriverImpl();
-        System.out.println("entity");
+        logger.info("entity");
         q = qAnalysisDriver.nerQuestion(q);
-        System.out.println("token");
+        logger.info("token");
         q = qAnalysisDriver.segmentationQuestion(q);
         // 得到所有以问题中实体为主语或宾语的所有相关三元组
-        System.out.println("triplets");
+        logger.info("triplets");
         q = this.getCandidateTriplets(q);
         // 计算三元组里的谓词和问题除了实体以外部分的相似度
-        System.out.println("sim");
+        logger.info("sim");
         q = this.calSimilarityWithWeight(q);
 
         return q;
@@ -132,7 +135,7 @@ public class OpenKBQA implements KbqaQueryDriver {
                         //double char_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"character");
                         double dis_sim = this.calTwoWordsSimilarityMethods(predicateName,entryName,"distance");
                         double total_sim = word_sim + char_sim + dis_sim; // 不同的相似度区间不一样  直接加0.0待优化啊
-                        System.out.println("三元组里的谓词:" + predicateName + " 问题里非实体词:" + entryName
+                        infologger.info("三元组里的谓词:" + predicateName + " 问题里非实体词:" + entryName
                                 + " 词相似:" + word_sim+ " 字相似:" + char_sim+ " 距离相似:" + dis_sim);
                         List<Double> list = Arrays.asList(word_sim, char_sim, dis_sim, total_sim);
                         score += total_sim;
@@ -209,7 +212,7 @@ public class OpenKBQA implements KbqaQueryDriver {
                         double wa = arg;
                         double word_sim =  (wa/(wa+wfre)) * this.calTwoWordsSimilarityMethods(predicateName,entryName,"word");
                         if(predicateName.length() > 2 && word_sim == 0){
-                            System.out.println(">2=0");
+                            infologger.info(">2=0");
                             Segmentation LongNameSplit = new Segmentation();
                             LongNameSplit.segmentation(predicateName);
 
@@ -226,7 +229,7 @@ public class OpenKBQA implements KbqaQueryDriver {
                         double char_sim = 0;
                         double dis_sim = (wa/(wa+wfre)) * this.calTwoWordsSimilarityMethods(predicateName,entryName,"distance");
                         double total_sim = word_sim + dis_sim; // 不同的相似度区间不一样  直接加0.0待优化啊
-                        System.out.println("三元组里的谓词:" + predicateName + " 问题里非实体词:" + entryName
+                        infologger.info("三元组里的谓词:" + predicateName + " 问题里非实体词:" + entryName
                                 + " 词相似:" + word_sim + " 距离相似：" + dis_sim);
                         List<Double> list = Arrays.asList(word_sim, char_sim, dis_sim, total_sim);
                         score += total_sim;
@@ -279,7 +282,7 @@ public class OpenKBQA implements KbqaQueryDriver {
                 }
             }
         }
-        System.out.println("total"+total);
+        infologger.info("total"+total);
         for(String key:token_map.keySet()){
             fre_map.put(key, ((double)token_map.get(key)/(double)total));
         }
