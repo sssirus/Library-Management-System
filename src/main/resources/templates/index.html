@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<!--layout:decorator="layout/default">-->
+<link href="/css/bootstrap.css" rel="stylesheet" type="text/css" />
+<link href="/css/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+<link href="/css/index.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/js/jquery-3.2.1.js"></script>
+<script type="text/javascript" src="/js/sendjs.js"></script>
+
+<html lang="en">
+<meta>
+<meta charset="UTF-8"/>
+<title>农业问答网站</title>
+</head>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="jumbotron">
+                <h1>
+                    农业问答
+                </h1>
+                <input  id="question" value="" name="name" style="display:inline" type="text" class="search-field" autoFocus />
+                <button  id="searchbtn" class="searchbtn" style="display:inline" onclick="sendquestion()">提问</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="jumbotron" id="content">
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+</body>
+</html>
