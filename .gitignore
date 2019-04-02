@@ -1,0 +1,6 @@
+*.log
+*.temp
+.idea/
+logs/
+target/
+src/main/resources/data/
