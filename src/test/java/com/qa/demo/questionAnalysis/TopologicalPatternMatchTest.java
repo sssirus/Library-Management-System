@@ -14,11 +14,11 @@ class TopologicalPatternMatchTest {
     @Test
     void getParseTreeString() {
 
-//        String[] sentence = {"ENTITY", "的" ,"颜色", "是", "什么"};
-//        String posSequence = "en uj n v r";
+        String[] sentence = {"ENTITY", "的" ,"颜色", "是", "什么"};
+        String posSequence = "en uj n v r";
 
-        String[] sentence = {"ENTITY", "是", "什么"};
-        String posSequence = "en v r";
+//        String[] sentence = {"ENTITY", "是", "什么"};
+//        String posSequence = "en v r";
 
 //        String[] sentence = {"ENTITY", "的", "规范", "汉字", "编号", "是", "什么"};
 //        String posSequence = "eng uj n nz n v r";
@@ -27,8 +27,8 @@ class TopologicalPatternMatchTest {
 //        String posSequence = "eng uj b n v r";
 
 
-        System.out.println(TopologicalPatternMatch.getInstance()
-                .getPredicateMention(posSequence, sentence));
+//        System.out.println(TopologicalPatternMatch.getInstance()
+//                .getPredicateMention(posSequence, sentence));
 
         System.out.println(TopologicalPatternMatch.getInstance().getParseTreeString(sentence));
         String subtreeString = TopologicalPatternMatch.getInstance().extractSubTree(posSequence, sentence);

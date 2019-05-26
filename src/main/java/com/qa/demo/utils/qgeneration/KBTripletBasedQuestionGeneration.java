@@ -1188,13 +1188,23 @@ public class KBTripletBasedQuestionGeneration {
         {
             question = s + "对人有什么坏处？";
             questionSet.add(question);
+            question = s + "有什么坏处？";
+            questionSet.add(question);
             question = s + "是否对人有害？";
+            questionSet.add(question);
+            question = s + "是否有害？";
             questionSet.add(question);
             question = s + "对人有什么危害？";
             questionSet.add(question);
+            question = s + "有什么危害？";
+            questionSet.add(question);
             question = s + "对人有什么不良影响？";
             questionSet.add(question);
+            question = s + "有什么不良影响？";
+            questionSet.add(question);
             question = s + "对人有什么不好的地方？";
+            questionSet.add(question);
+            question = s + "有什么不好的地方？";
             questionSet.add(question);
             question = s + "的害处是什么？";
             questionSet.add(question);

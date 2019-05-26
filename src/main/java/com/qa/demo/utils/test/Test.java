@@ -5,9 +5,8 @@ import com.qa.demo.systemController.FaqDemo;
 import com.sun.xml.internal.fastinfoset.util.CharArray;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.FileManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +21,7 @@ import static com.qa.demo.conf.FileConfig.*;
 
 public class Test {
 
-    private static Logger LOG = LogManager.getLogger(Test.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(Test.class.getName());
 
     public static void main(String[] args) throws IOException {
 

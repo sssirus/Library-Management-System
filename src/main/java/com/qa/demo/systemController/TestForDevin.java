@@ -8,25 +8,26 @@ import com.qa.demo.ontologyProcess.TDBCrudDriver;
 import com.qa.demo.ontologyProcess.TDBCrudDriverImpl;
 import com.qa.demo.query.*;
 import com.qa.demo.utils.es.IndexFile;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Scanner;
 
 public class TestForDevin {
 
-    private static Logger LOG = LogManager.getLogger(FaqDemo.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(FaqDemo.class.getName());
 
     public static void main(String[] args) throws IOException {
         //系统初始化操作：es建立索引
 
         IndexFile.indexFaqData(DataSource.SYNONYM);
-        LOG.info(" [info]已建立faq索引！");
+        logger.info(" [info]已建立faq索引！");
 
         TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
         tdbCrudDriver.loadTDBModel();
-        LOG.info(" [info]已建立TDB MODEL，系统初始化完成！");
+        logger.info(" [info]已建立TDB MODEL，系统初始化完成！");
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入问题，换行表示输入下一题，‘#’结束");
@@ -66,7 +67,7 @@ public class TestForDevin {
 
             //生成答案并返回
             question = analysisDriver.returnAnswer(question);
-            LOG.info("[info]处理完成");
+            logger.info("[info]处理完成");
 
             //输出答案
             System.out.println("系统作答：");

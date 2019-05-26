@@ -78,18 +78,18 @@ public class TopologicalPatternMatch {
 //        //得到treebankLanguageBank抽象类;
 //        //This interface specifies language/treebank specific information for a Treebank,
 //        // which a parser or other treebank user might need to know.
-//        TreebankLanguagePack tlp = lp.getOp().langpack();
+        TreebankLanguagePack tlp = lp.getOp().langpack();
 //
 //        //进行依存分析；
 //        //A TypedDependency is a relation between two words in a GrammaticalStructure.
 //        //Each TypedDependency consists of a governor word, a dependent word,
 //        // and a relation, which is normally an instance of GrammaticalRelation.
-//        GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
-//        GrammaticalStructure gs = gsf.newGrammaticalStructure(parse_tree);
-//        List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
+        GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
+        GrammaticalStructure gs = gsf.newGrammaticalStructure(parse_tree);
+        List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
 //        //打印依存关系；
-//        System.out.println("TypedDependency is: ");
-//        System.out.println(tdl);
+        System.out.println("TypedDependency is: ");
+        System.out.println(tdl);
 //        System.out.println();
 //
 //        TreePrint tp = new TreePrint("penn,typedDependenciesCollapsed",tlp);
@@ -406,6 +406,7 @@ public class TopologicalPatternMatch {
         TopologicalPattern topologicalPattern = new TopologicalPattern();
         topologicalPattern.setRoot_POS(root);
         topologicalPattern.setLeaves_POS(leavePOS);
+//        topologicalPattern.printTopologicalPattern();
 
         ArrayList<TopologicalStructure> topologicalStructureRepository
                 = TopologicalPatternClient.getInstance().getTopologicalStructureRepository();

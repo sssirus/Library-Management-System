@@ -124,9 +124,9 @@ public class ALGQuerySynonymKBQA implements KbqaQueryDriver {
             Map.Entry<String, HashSet<String>> entry = (Map.Entry) (it.next());
             String predicatename = entry.getKey();
             HashSet<String> synonyms = entry.getValue();
-            //double coOccurrenceScore = _coOccurrence(tokens, synonyms);
+            double coOccurrenceScore = _coOccurrence(tokens, synonyms);
 //            double coOccurrenceScore = _coOccurrenceNew(tokens,predicatename,synonyms);
-            double coOccurrenceScore = _SoftSimilairty(tokens,predicatename,synonyms);
+//            double coOccurrenceScore = _SoftSimilairty(tokens,predicatename,synonyms);
             if(coOccurrenceScore>0)
             {
                 String templateString = "";

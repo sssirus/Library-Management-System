@@ -6,6 +6,7 @@ import com.qa.demo.questionAnalysis.QuestionAnalysisDriver;
 import com.qa.demo.questionAnalysis.QuestionAnalysisDriverImpl;
 import com.qa.demo.questionAnalysis.TopologicalPatternMatch;
 import com.qa.demo.templateTraining.TemplateGeneralization;
+import com.qa.demo.utils.w2v.Subword2Vec;
 import com.qa.demo.utils.w2v.Word2VecGensimModel;
 
 import java.io.FileNotFoundException;
@@ -138,7 +139,8 @@ public class TopologicalPatternKBQA implements KbqaQueryDriver {
                     predicateMentionWordList.add(predicateMentionWord);
                 }
             }
-
+            // add by yaoleo to test simlarity between each predicateMentionWords' subword vector and the predication
+            Subword2Vec.calSim(predicateMentionWordList, "颜色");
 
             for(ArrayList<String> predicateMentionWords : predicateMentionWordList)
             {

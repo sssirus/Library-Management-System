@@ -4,12 +4,13 @@ import com.qa.demo.conf.Configuration;
 import com.qa.demo.conf.FileConfig;
 import com.qa.demo.dataStructure.DataSource;
 import com.qa.demo.dataStructure.QuestionTemplate;
+
 import com.qa.demo.templateTraining.TemplateFromTripletsClient;
 import com.qa.demo.utils.io.IOTool;
 import com.qa.demo.templateTraining.TemplateGeneralization;
 import com.qa.demo.utils.trainingcorpus.ExtractQuestionsFromText;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -34,7 +35,7 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
  * Time: 2017/8/25
  */
 public class IndexFile {
-    private static Logger LOG = LogManager.getLogger(IndexFile.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(IndexFile.class.getName());
 
     /**
      * 初始化索引结构
@@ -74,8 +75,8 @@ public class IndexFile {
                         putMappingRequest = Requests.putMappingRequest(indexName).type(type).source(_getModifiedMapping(type));
                     }
                     PutMappingResponse putMappingResponse = client.admin().indices().putMapping(putMappingRequest).actionGet();
-                    LOG.info("[info]已定义index:"+indexName+"-"+type);
-                    System.out.println("已定义index:"+indexName+"-"+type);
+                    logger.info("[info]已定义index:"+indexName+"-"+type);
+                  //  System.out.println("已定义index:"+indexName+"-"+type);
                     return false;
                 }
             }
@@ -99,8 +100,8 @@ public class IndexFile {
                         .prepareCreate(indexName)
                         .setSource(mapping);
                 CreateIndexResponse createIndexResponse = createIndexRequestBuilder.execute().actionGet();
-                LOG.info("[info]已定义index:"+indexName+"-"+type);
-                System.out.println("已定义index:"+indexName+"-"+type);
+                logger.info("[info]已定义index:"+indexName+"-"+type);
+                //System.out.println("已定义index:"+indexName+"-"+type);
                 return false;
             }
         } catch (IOException e) {

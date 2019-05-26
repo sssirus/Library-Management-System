@@ -33,7 +33,7 @@ public class W2VTest {
         Scanner scanner = new Scanner(System.in);
         while(true)
         {
-            System.out.println("请输入问题，换行表示输入下一题，‘#’结束：");
+            System.out.println("请输入字名，换行表示输入完成，输入‘#’表示结束：");
             String word = scanner.next();
             if (word == "" || word == null || word.equals("#")){
                 break;

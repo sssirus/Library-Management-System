@@ -1,42 +1,357 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<!--layout:decorator="layout/default">-->
-<link href="/css/bootstrap.css" rel="stylesheet" type="text/css" />
-<link href="/css/bootstrap-theme.css" rel="stylesheet" type="text/css" />
-<link href="/css/index.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="/js/jquery-3.2.1.js"></script>
-<script type="text/javascript" src="/js/sendjs.js"></script>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>中文QA</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/sendjs.js"></script>
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
 
-<html lang="en">
-<meta>
-<meta charset="UTF-8"/>
-<title>农业问答网站</title>
+    <style>
+
+        body {
+            padding-top: 50px;
+            padding-bottom: 40px;
+            color: #5a5a5a;
+        }
+
+
+
+        .jumbotron {
+            height: 200px;
+            text-align:center;
+            margin-bottom: 60px;
+        }
+        .input-group
+        {
+            align:center;
+        }
+
+        .label
+        {
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .ball-pulse-sync {
+            transform: scale(1);
+        }
+
+        .ball-pulse-sync > div:nth-child(1) {
+            -webkit-animation: ball-pulse-sync 0.6s -0.14s infinite ease-in-out;
+            animation: ball-pulse-sync 0.6s -0.14s infinite ease-in-out;
+        }
+        .ball-pulse-sync > div:nth-child(2) {
+            -webkit-animation: ball-pulse-sync 0.6s -0.07s infinite ease-in-out;
+            animation: ball-pulse-sync 0.6s -0.07s infinite ease-in-out;
+        }
+        .ball-pulse-sync > div:nth-child(3) {
+            -webkit-animation: ball-pulse-sync 0.6s 0s infinite ease-in-out;
+            animation: ball-pulse-sync 0.6s 0s infinite ease-in-out;
+        }
+        .ball-pulse-sync > div {
+            background-color: #B1AFAE;
+            width: 15px;
+            height: 15px;
+            border-radius: 100%;
+            margin: 2px;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+            display: inline-block;
+        }
+
+        @keyframes ball-pulse-sync {
+            33% {
+                -webkit-transform: translateY(10px);
+                transform: translateY(10px);
+            }
+            66% {
+                -webkit-transform: translateY(-10px);
+                transform: translateY(-10px);
+            }
+            100% {
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            background: #333;
+            color: #eee;
+            font-size: 11px;
+            padding: 20px;
+            margin-top:80px;
+        }
+        ul.unstyled {
+            list-style: none;
+            padding: 0;
+        }
+        footer h6 {
+            color: white;
+        }
+        .jumbotron
+        {
+            background-color: transparent;
+        }
+    </style>
+
 </head>
+
 <body>
+<!-- 顶部导航 -->
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation" id="menu-nav">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">切换导航</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">中文QA</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#ad-carousel">首页</a></li>
+
+
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">产品 <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#feature-tab" data-tab="tab-system">系统</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#feature-tab" data-tab="tab-knowledgegraph">知识图谱</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#feature-tab" data-tab="tab-service">服务</a></li>
+
+                    </ul>
+
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">解决方案 <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#feature-tab" data-tab="tab-chrome">研发智能化解决方案</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#feature-tab" data-tab="tab-firefox">商情智能化解决方案</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#feature-tab" data-tab="tab-safari">司法智能化解决方案</a></li>
+
+                    </ul>
+                </li>
+                <li><a href="#" data-toggle="modal" data-target="#about-modal">关于我们</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" >登录</a></li>
+                <li><a href="#"  >注册</a></li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<!-- 巨幕 -->
+
+<div class="jumbotron">
+    <div class="container">
+        <h1>中文QA</h1>
+    </div>
+</div>
+
+<!-- 搜索栏 -->
+
 <div class="container">
-    <div class="row clearfix">
-        <div class="col-md-12 column">
-            <div class="jumbotron">
-                <h1>
-                    农业问答
-                </h1>
-                <input  id="question" value="" name="name" style="display:inline" type="text" class="search-field" autoFocus />
-                <button  id="searchbtn" class="searchbtn" style="display:inline" onclick="sendquestion()">提问</button>
+
+</div>
+
+
+
+
+
+<!-- 热门搜索： -->
+<div class="container">
+    <form>
+
+        <div class="input-group">
+            <input type="text" id='search_input' class="form-control" name='mention' placeholder="请输入问题">
+            <span class="input-group-btn">
+        <button class="btn btn-default" type="submit" data-toggle="collapse"     data-target="#demo">提交</button>
+      </span>
+
+        </div>
+        <div class="field">
+           <span class="help-block">
+              <h3>热门搜索：</h3>
+			  <h4><span class="label label-primary"  href="javascript:void(0)">罗宾·克诺赫在哪里出生？</span>
+			  <span class="label label-success" href="javascript:void(0)">文化学园大学的地址是什么？</span>
+			  <span class="label label-info" href="javascript:void(0)">小红帽特工队的续作是？</span>
+			  <span class="label label-warning" href="javascript:void(0)">吴明林从事什么职业？</span>
+			  <span class="label label-danger" href="javascript:void(0)">河儿口镇有几个社区？</span>
+			  <span class="label label-default" href="javascript:void(0)">六月的茉莉梦录制于哪一年？</span>
+			  <span class="label label-primary" href="javascript:void(0)">马头古墓是什么时代的墓穴？</span>
+			  <span class="label label-success" href="javascript:void(0)">2015年非洲羽毛球锦标赛的比赛场地在哪里？</span>
+			  <span class="label label-info" href="javascript:void(0)">台北市立重庆国民中学是什么学校？</span>
+			  <span class="label label-warning" href="javascript:void(0)">中行镇的行政区划代码是什么？</span>
+			  <span class="label label-danger" href="javascript:void(0)">多聚甲醛的欧盟分类是什么？</span></h4>
+
+
+          </span>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+
+
+
+<div class="container">
+
+    <div class= "text-center" id="loading" style="display: none; margin-top: 50px;">
+        <div class="ball-pulse-sync" >
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <div id="search_result" style="display: none">
+
+        <div class="page-header">
+            <h3 class="text-center">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                搜索结果
+            </h3>
+        </div>
+
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="jumbotron" id="search_output">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<!-- 关于 -->
+<div class="modal fade" id="about-modal" tabindex="-1" role="dialog" aria-labelledby="modal-label"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span class="sr-only">关闭</span></button>
+                <h4 class="modal-title" id="modal-label">关于</h4>
+            </div>
+            <div class="modal-body">
+                <p>慕课网隶属于北京慕课科技中心(有限合伙)，是一家从事互联网免费教学的网络教育公司。秉承“开拓、创新、公平、分享”的精神，
+                    将互联网特性全面的应用在教育领域，致力于为教育机构及求学者打造一站式互动在线教育品牌。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">了解了</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container">
-    <div class="row clearfix">
-        <div class="col-md-12 column">
-            <div class="jumbotron" id="content">
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-2">
+                <h6>Copyright &copy;中文QA</h6>
+            </div>
+
+            <div class="col-sm-4">
+                <h6>关于我们</h6>
+                <p>
+                    中国上海/2014年8月14日 — 服务于中国及全球华人社群的领先在线媒体公司(NASDAQ GS: SINA)今日公布了截至2014年6月30日的第二季度未经审计的财务报告。
+                </p>
+            </div>
+
+            <div class="col-sm-2">
+                <h6>导航</h6>
+                <ul class="unstyled">
+                    <li><a href="">主页</a></li>
+                    <li><a href="">服务</a></li>
+                    <li><a href="">链接</a></li>
+                    <li><a href="">联系我们</a></li>
+                </ul>
+            </div>
+
+            <div class="col-sm-2">
+                <h6>Follow us</h6>
+                <ul class="unstyled">
+                    <li><a href="">微博</a></li>
+                    <li><a href="">微信</a></li>
+                    <li><a href="">来往</a></li>
+                </ul>
+            </div>
+
+            <div class="col-sm-2">
+                <h6>本网站由<span class="glyphicon glyphicon-heart"></span>SAKURA制作</h6>
             </div>
         </div>
     </div>
-</div>
+</footer><!--页脚结束-->
 
-</div>
+
+<script>
+    $("#search_result").hide();
+    $("#loading").hide();
+    $(document).ready(function () {
+        $('form').on('submit', function () {
+            $("#search_result").hide();
+            $("#loading").show();
+            var q = $("#search_input").val();
+            createXMLHttpRequest();
+            //设置在请求结束后调用handleStateChange函数
+            xmlHttp.onreadystatechange = handleStateChange;
+            //用get方法请求服务器端的simple.xml
+            xmlHttp.open("POST","question",true);
+
+
+            //发送请求
+            var form=new FormData();
+            form.append("question",q);
+            console.log(form);
+            xmlHttp.send(form);
+                return false;
+        });
+
+        $('.label').on('click', function (e) {
+            $("#search_input").val(e.target.innerText);
+            $('form').submit();
+        });
+    })
+</script>
+
+
+
+<script type="text/javascript">
+    function  HtmlLoad(url){
+        $('#myModal').modal('show');
+
+        setTimeout(function () {
+            $('#myModal').modal('hide');
+        }, 3000);
+
+    }
+</script>
 </body>
 </html>

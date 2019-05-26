@@ -11,8 +11,9 @@ import com.qa.demo.query.*;
 import com.qa.demo.questionAnalysis.Segmentation;
 import com.qa.demo.utils.es.IndexFile;
 import com.qa.demo.utils.io.IOTool;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -30,7 +31,7 @@ import java.util.List;
 
 public class MainDriver {
 
-    private static Logger LOG = LogManager.getLogger(FaqDemo.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(FaqDemo.class.getName());
 
     public static String inputQuestion(){
 
@@ -100,11 +101,11 @@ public class MainDriver {
 //      IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN, DataSource.FAQ_T);
         IndexFile.indexFaqData(DataSource.FAQ, DataSource.PATTERN);
 //      IndexFile.indexFaqData(DataSource.FAQ);
-        LOG.info(" [info]已建立faq索引！");
+        logger.info(" [info]已建立faq索引！");
 
         TDBCrudDriver tdbCrudDriver = new TDBCrudDriverImpl();
         tdbCrudDriver.loadTDBModel();
-        LOG.info(" [info]已建立TDB MODEL，系统初始化完成！");
+        logger.info(" [info]已建立TDB MODEL，系统初始化完成！");
 
         //取得问题集合;
         ArrayList<Question> questions = IOTool.getQuestionsFromTripletGeneratedQuestionFile();
@@ -172,7 +173,7 @@ public class MainDriver {
 
             //生成答案并返回
             q = analysisDriver.returnAnswer(q);
-            LOG.info("[info]处理完成");
+            logger.info("[info]处理完成");
 
             stringtemp = "question "+ count+": " + question_string + "\r\n";
             System.out.print(stringtemp);

@@ -5,6 +5,7 @@ import com.qa.demo.conf.FileConfig;
 import com.qa.demo.dataStructure.Entity;
 import com.qa.demo.dataStructure.QueryTuple;
 import com.qa.demo.dataStructure.Question;
+import com.qa.demo.utils.alias_dict.AliasDictionary;
 import org.ansj.domain.Result;
 import org.ansj.splitWord.analysis.ToAnalysis;
 import org.nlpcn.commons.lang.tire.domain.Forest;
@@ -168,6 +169,8 @@ public class QuestionAnalysisDriverImpl implements QuestionAnalysisDriver {
     //输入一个Question类型的数据结构，对其进行NER分析后输出；
     public Question nerQuestion(Question q) {
         q.setQuestionEntity(NER.getEntities(q.getQuestionString()));
+        // add by yaoleo about aliasDict if NER.getEntities()没找到实体 那么尝试别名
+        //q.setQuestionEntity(AliasEntity.getAliasEntities(q.getQuestionString()));
         return q;
     }
 
