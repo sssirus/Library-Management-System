@@ -1,7 +1,4 @@
 package com.qa.demo.controller;
-import com.qa.demo.dataStructure.Entity;
-import java.util.ArrayList;
-import java.util.List;
 /**
  * @author: Seven.wk
  * @description: 数据返回类
@@ -13,23 +10,23 @@ public class ReturnedResults{
 
     private String predicate;
 
-    private List<Entity> entities =new ArrayList<> ();
+    private String entity ;
 
     public ReturnedResults() {
     }
 
-    public ReturnedResults(String predicate, List<Entity> entities) {
+    public ReturnedResults(String predicate, String entity) {
         this.predicate = predicate;
-        this.entities = entities;
+        this.entity = entity;
     }
 
 
-    public List<Entity> getEntity() {
-        return entities;
+    public String getEntity() {
+        return entity;
     }
 
-    public void setEntity(List<Entity> entities) {
-        this.entities = entities;
+    public void setEntity(String entity) {
+        this.entity = entity;
     }
 
     public String getPredicate() {
