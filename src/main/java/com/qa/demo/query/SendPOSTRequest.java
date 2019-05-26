@@ -1,5 +1,6 @@
-package com.qa.demo.controller;
+package com.qa.demo.query;
 
+import com.qa.demo.dataStructure.ReturnedResults;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -25,12 +26,12 @@ public class SendPOSTRequest {
 
         return response.getBody();
     }
-public static ReturnedResults getUserInfoFromAuthority(String question) {
+public static ReturnedResults getPredicateFromFlaskServer(String question) {
 
     String authorizeUrl = "http://0.0.0.0:6006/predict";
 
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("quesion", question);
+    params.add("question", question);
 
 
     //发送Post数据并返回数据.

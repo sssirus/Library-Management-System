@@ -5,6 +5,7 @@ import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.Question;
 import com.qa.demo.query.KbqaQueryDriver;
 import com.qa.demo.query.OpenKBQA;
+import com.qa.demo.query.OpenKBQABiLstm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -53,7 +54,7 @@ public class MainController {
         }
         Question q = new Question(input);
         q.setQuestionString(qstring);
-        KbqaQueryDriver OpenKBQADriver = new OpenKBQA();
+        KbqaQueryDriver OpenKBQADriver = new OpenKBQABiLstm();
         q = OpenKBQADriver.kbQueryAnswers(q);
 
 

@@ -250,7 +250,7 @@ public class NER {
      * @param entity entity
      * @return 是否有交集
      */
-    private static boolean _isCandidate(char[] charArray, String entity){
+    public static boolean _isCandidate(char[] charArray, String entity){
         for (char ch : charArray){
             if (entity.indexOf(ch) != -1)
                 return true;
