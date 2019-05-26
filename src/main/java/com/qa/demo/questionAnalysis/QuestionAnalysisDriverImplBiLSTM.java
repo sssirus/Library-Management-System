@@ -23,19 +23,20 @@ public class QuestionAnalysisDriverImplBiLSTM implements QuestionAnalysisDriver 
             String query=q.getQuestionString().replace("[", "(").replace("]", ")");
             q.setQuestionString(query);
         }
+        String minLen="zheshiyigezhanweifumeiyoufeichangdadezuoyong";
         for (Entity e : q.getQuestionEntity()) {
-            String sentence =
-                    q.getQuestionString().replace(e.getKgEntityName(), Configuration.SPLITSTRING);
-            for (String punctuation : Configuration.PUNCTUATION_SET) {
-                sentence = sentence.replace(punctuation, "");
-            }
-            sentence = sentence.trim();
-            q.setQuestionString(sentence);
-            //System.out.println("待分词的句子为：" + sentence);
-            //Segmentation.segmentation(sentence);
-            //ArrayList<String> tokens = (ArrayList<String>) Segmentation.getTokens();
-            //map.put(e, tokens);
+
+        if(e.getKgEntityName().length()<minLen.length())
+            minLen=e.getKgEntityName();
         }
+        String sentence =
+                q.getQuestionString().replace(minLen, " ");
+        for (String punctuation : Configuration.PUNCTUATION_SET) {
+            sentence = sentence.replace(punctuation, "");
+        }
+        sentence = sentence.trim();
+        System.out.println(sentence);
+        q.setQuestionString(sentence);
         //q.setQuestionToken(map);
         return q;
     }

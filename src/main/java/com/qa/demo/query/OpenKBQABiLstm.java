@@ -44,6 +44,8 @@ public class OpenKBQABiLstm implements KbqaQueryDriver {
         // 得到所有以问题中实体为主语或宾语的所有相关三元组
         ReturnedResults resultVo = SendPOSTRequest.getPredicateFromFlaskServer(q.getQuestionString());
         String predicate = resultVo.getPredicate();
+        System.out.println("predicate");
+        System.out.println(predicate);
         Predicate p = new Predicate();
         p.setKgPredicateName(predicate);
         List<Predicate> ps = new ArrayList<Predicate>();
