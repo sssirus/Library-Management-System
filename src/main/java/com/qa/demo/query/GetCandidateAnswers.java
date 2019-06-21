@@ -241,10 +241,10 @@ public class GetCandidateAnswers {
         System.out.println(uri);
         subjects.add(ENTITY_PREFIX_BAIDU + uri);
         System.out.println(ENTITY_PREFIX_BAIDU + uri);
-        subjects.add(ENTITY_PREFIX + uri);
-        System.out.println(ENTITY_PREFIX + uri);
-        subjects.add(ENTITY_PREFIX_CAAS + uri);
-        System.out.println(ENTITY_PREFIX_CAAS + uri);
+        //subjects.add(ENTITY_PREFIX + uri);
+        //System.out.println(ENTITY_PREFIX + uri);
+        //subjects.add(ENTITY_PREFIX_CAAS + uri);
+        //System.out.println(ENTITY_PREFIX_CAAS + uri);
         subjects.add(ENTITY_PREFIX_HUDONG + uri);
         System.out.println(ENTITY_PREFIX_HUDONG + uri);
         subjects.add(ENTITY_PREFIX_WIKI + uri);
@@ -264,6 +264,62 @@ public class GetCandidateAnswers {
             //System.out.println("new Triples subject: "+triplet1.getSubjectName());
             //System.out.println("new Triples predict: "+triplet1.getPredicateName());
             //System.out.println("new Triples object: "+triplet1.getObjectName());
+        }
+        return ret;
+    }
+    /**
+     * 获得以 entity 为主语或宾语的候选三元组
+     * <p>
+     * entity 为主语
+     * entity 为宾语
+     * entity 对应的实体名字为主语
+     * entity 对应的实体名字为宾语
+     * 然后将前置 uri 换成其他的前置 uri 继续查询
+     * <p>
+     * 返回所有不同的结果
+     *
+     * @param entity entity
+     * @return 以 entity 为主语或宾语的候选三元组
+     */
+    public static List<Triplet> getCandidateTripletsByEntityWithoutURL(Entity entity) {
+
+        String uri = entity.getEntityURI();
+        System.out.println("=============================");
+        //System.out.println(uri);
+        Triplet triplet1 = new Triplet();
+        Triplet triplet2 = new Triplet();
+        Triplet triplet3 = new Triplet();
+        uri = uri.substring(uri.lastIndexOf('/') + 1);
+
+        //System.out.println("next:"+uri);
+        List<Triplet> tripletList;
+
+
+
+
+        triplet1.setSubjectURI(ENTITY_PREFIX_BAIDU + uri);
+
+        triplet2.setSubjectURI(ENTITY_PREFIX_HUDONG + uri);
+
+        triplet2.setSubjectURI(ENTITY_PREFIX_WIKI + uri);
+
+        tripletList = WebServiceAccessor.query(triplet1);
+
+        //tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
+
+        //List<String> objects = subjects;
+
+        tripletList.addAll(WebServiceAccessor.query(triplet2));
+        tripletList.addAll(WebServiceAccessor.query(triplet3));
+
+        List<Triplet> ret = new ArrayList<>();
+        for (Triplet triplet : tripletList) {
+            if (!ret.contains(triplet))
+                ret.add(triplet);
+            System.out.println("Find one!==============: ");
+            System.out.println("new Triples subject: "+triplet1.getSubjectName());
+            System.out.println("new Triples predict: "+triplet1.getPredicateName());
+            System.out.println("new Triples object: "+triplet1.getObjectName());
         }
         return ret;
     }

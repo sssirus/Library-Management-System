@@ -166,18 +166,6 @@ public class OpenKBQABiLstm implements KbqaQueryDriver {
             e1.setKgEntityName(entitystr);
             entityList.add(e1);
 
-            Entity e2 = new Entity();
-            String entityURL2 = ENTITY_PREFIX_HUDONG + entitystr;
-            e2.setEntityURI(entityURL2);
-            e2.setKgEntityName(entitystr);
-            entityList.add(e2);
-
-            Entity e3 = new Entity();
-            String entityURL3 = ENTITY_PREFIX_WIKI + entitystr;
-            e3.setEntityURI(entityURL3);
-            e3.setKgEntityName(entitystr);
-            entityList.add(e3);
-
 
             q.setQuestionEntity(entityList);
 
@@ -196,7 +184,7 @@ public class OpenKBQABiLstm implements KbqaQueryDriver {
 
 
         logger.info("triplets");
-        q = getCandidateTriplets(q);
+        q = getCandidateTripletsWithoutURL(q);
         Map<String,String> candidate = new HashMap();
         //ArrayList<String> cadidatePredicateList = new ArrayList<>();
         StringBuffer cadidatePredicateList = new StringBuffer();
@@ -245,6 +233,30 @@ public class OpenKBQABiLstm implements KbqaQueryDriver {
         Set<Triplet> set = new HashSet<>();
         for(Entity entity: q.getQuestionEntity()){ // 问题中所有实体对应作为主语或宾语的三元组 去重
             List<Triplet> temp  = GetCandidateAnswers.getCandidateTripletsByEntity(entity);
+            set.addAll(temp);
+        }
+
+        List<Triplet> tripletList = new ArrayList<>(set);
+
+        Iterator<Triplet> iter = tripletList.iterator();
+        while(iter.hasNext()){
+            Triplet triplet = iter.next();
+            String PredicateName = triplet.getPredicateURI().substring(triplet.getPredicateURI().lastIndexOf("/")+1);
+            if(PredicateName.equals("relatedPage") || PredicateName.equals("internalLink") || PredicateName.equals("relatedImage")
+                    || PredicateName.equals("externalLink") || PredicateName.equals("category") ){
+                iter.remove();
+            }
+        }
+
+        q.setTripletList(tripletList);
+
+        return q;
+    }
+    private Question getCandidateTripletsWithoutURL(Question q){
+
+        Set<Triplet> set = new HashSet<>();
+        for(Entity entity: q.getQuestionEntity()){ // 问题中所有实体对应作为主语或宾语的三元组 去重
+            List<Triplet> temp  = GetCandidateAnswers.getCandidateTripletsByEntityWithoutURL(entity);
             set.addAll(temp);
         }
 
