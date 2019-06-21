@@ -9,5 +9,5 @@ package com.qa.demo.dataStructure;
  * ES: retrieved from ES engine;
  */
 public enum DataSource {
-    BAIDU, HUDONG, WIKI, COIN, ES, FAQ, FAQ_T, PATTERN, ENCYCLOPEDIA, SYNONYM, SYNONYM_TEMPLATE
+    BAIDU, HUDONG, WIKI, COIN, ES, FAQ, FAQ_T, PATTERN, ENCYCLOPEDIA, SYNONYM, SYNONYM_TEMPLATE,BiLSTM
 }

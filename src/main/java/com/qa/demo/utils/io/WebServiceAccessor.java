@@ -1,23 +1,6 @@
 package com.qa.demo.utils.io;
 
-import com.qa.demo.conf.FileConfig;
 import com.qa.demo.dataStructure.Triplet;
-
-import java.io.*;
-import javax.validation.constraints.NotNull;
-
-import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.net.URISyntaxException;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -26,8 +9,24 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.qa.demo.utils.io.TripletReader.getTripletsFromNT_Triplets;
-import static com.qa.demo.utils.io.WebServiceTool.*;
+import javax.validation.constraints.NotNull;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+
+import static com.qa.demo.utils.io.WebServiceTool._analysisJson;
+import static com.qa.demo.utils.io.WebServiceTool._decode_unicode;
 import static java.lang.Thread.sleep;
 
 /**
@@ -180,7 +179,7 @@ public class WebServiceAccessor {
                 }
             }
         }*/
-        ret.addAll(queryServer(new Triplet(), sparql, Repository.agriculture));
+//        ret.addAll(queryServer(new Triplet(), sparql, Repository.agriculture));
 
         // 访问 zhishi_201801，需要考虑重定向与多义词
         ret.addAll(queryServer(new Triplet(), sparql, Repository.zhishi_201801));
@@ -273,12 +272,12 @@ public class WebServiceAccessor {
      */
     private Repository _judgeRepository(Triplet triplet) {
         String subject = triplet.getSubjectURI();
-        if (subject != null) {
-            for (Triplet t : tripletList) {
-                if (t.getSubjectURI().contains(subject) || t.getObjectURI().contains(subject))
-                    return Repository.agriculture;
-            }
-        }
+//        if (subject != null) {
+//            for (Triplet t : tripletList) {
+//                if (t.getSubjectURI().contains(subject) || t.getObjectURI().contains(subject))
+//                    return Repository.agriculture;
+//            }
+//        }
         return Repository.zhishi_201801;
     }
 

@@ -1,19 +1,17 @@
 package com.qa.demo.query;
 
-import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.*;
 import com.qa.demo.questionAnalysis.Segmentation;
 import com.qa.demo.utils.io.WebServiceAccessor;
-import com.qa.demo.utils.nt_triple.AG;
 import com.qa.demo.utils.kgprocess.KGTripletsClient;
+import com.qa.demo.utils.nt_triple.AG;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import static com.qa.demo.conf.Configuration.*;
+import static com.qa.demo.questionAnalysis.NER._isCandidate;
 
 /**
  * Created time: 2017_09_08
@@ -164,6 +162,54 @@ public class GetCandidateAnswers {
 
     }
 
+    /**
+     * 获得以 entity 为主语或宾语的候选三元组
+     * <p>
+     * entity 为主语
+     * entity 为宾语
+     * entity 对应的实体名字为主语
+     * entity 对应的实体名字为宾语
+     * 然后将前置 uri 换成其他的前置 uri 继续查询
+     * <p>
+     * 返回所有不同的结果
+     *
+     * @param entity entity
+     * @return 以 entity 为主语或宾语的候选三元组
+     */
+    // 被动实体链接器
+    public static ArrayList<Triplet> getTriplet(String entity,String predicate) {
+
+        //HashMap<String, Pair<Double, HashSet<String>>> candidateEntities = new HashMap<>();
+        //ArrayList<Triplet> entityList = new ArrayList<>();
+        ArrayList<Triplet> tripletList = KGTripletsClient.getInstance().getKgTriplets();
+
+        double alpha = 0.6, beita = 0.6;
+
+
+        if(entity.contains("[")&&entity.contains("]")) //知识库中只包含"( )"的形式
+            entity=entity.replace("[","(").replace("]",")");
+
+
+
+        char[] entityCharArray = entity.toCharArray();
+        char[] predicateCharArray = predicate.toCharArray();
+        for (Triplet t : tripletList) {
+            String sname = t.getSubjectName();
+            String pname = t.getPredicateName();
+            if (_isCandidate(predicateCharArray,pname)&&_isCandidate(entityCharArray, sname)) {
+                tripletList.add(t);
+            }
+        }
+
+
+        if(tripletList.isEmpty())
+            return tripletList;
+
+
+
+
+        return tripletList;
+    }
 
     /**
      * 获得以 entity 为主语或宾语的候选三元组
@@ -182,20 +228,28 @@ public class GetCandidateAnswers {
     public static List<Triplet> getCandidateTripletsByEntity(Entity entity) {
 
         String uri = entity.getEntityURI();
+        System.out.println("=============================");
+        //System.out.println(uri);
         Triplet triplet = new Triplet();
         uri = uri.substring(uri.lastIndexOf('/') + 1);
 
-
+        //System.out.println("next:"+uri);
         List<Triplet> tripletList;
 
         List<String> subjects = new ArrayList<>();
         subjects.add(uri);
+        System.out.println(uri);
         subjects.add(ENTITY_PREFIX_BAIDU + uri);
-        subjects.add(ENTITY_PREFIX + uri);
-        subjects.add(ENTITY_PREFIX_CAAS + uri);
+        System.out.println(ENTITY_PREFIX_BAIDU + uri);
+        //subjects.add(ENTITY_PREFIX + uri);
+        //System.out.println(ENTITY_PREFIX + uri);
+        //subjects.add(ENTITY_PREFIX_CAAS + uri);
+        //System.out.println(ENTITY_PREFIX_CAAS + uri);
         subjects.add(ENTITY_PREFIX_HUDONG + uri);
+        System.out.println(ENTITY_PREFIX_HUDONG + uri);
         subjects.add(ENTITY_PREFIX_WIKI + uri);
-
+        System.out.println(ENTITY_PREFIX_WIKI + uri);
+        System.out.println("=============================");
         tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
 
         List<String> objects = subjects;
@@ -206,6 +260,66 @@ public class GetCandidateAnswers {
         for (Triplet triplet1 : tripletList) {
             if (!ret.contains(triplet1))
                 ret.add(triplet1);
+            //System.out.println("Find one!==============: ");
+            //System.out.println("new Triples subject: "+triplet1.getSubjectName());
+            //System.out.println("new Triples predict: "+triplet1.getPredicateName());
+            //System.out.println("new Triples object: "+triplet1.getObjectName());
+        }
+        return ret;
+    }
+    /**
+     * 获得以 entity 为主语或宾语的候选三元组
+     * <p>
+     * entity 为主语
+     * entity 为宾语
+     * entity 对应的实体名字为主语
+     * entity 对应的实体名字为宾语
+     * 然后将前置 uri 换成其他的前置 uri 继续查询
+     * <p>
+     * 返回所有不同的结果
+     *
+     * @param entity entity
+     * @return 以 entity 为主语或宾语的候选三元组
+     */
+    public static List<Triplet> getCandidateTripletsByEntityWithoutURL(Entity entity) {
+
+        String uri = entity.getEntityURI();
+        System.out.println("=============================");
+        //System.out.println(uri);
+        Triplet triplet1 = new Triplet();
+        Triplet triplet2 = new Triplet();
+        Triplet triplet3 = new Triplet();
+        uri = uri.substring(uri.lastIndexOf('/') + 1);
+
+        //System.out.println("next:"+uri);
+        List<Triplet> tripletList;
+
+
+
+
+        triplet1.setSubjectURI(ENTITY_PREFIX_BAIDU + uri);
+
+        triplet2.setSubjectURI(ENTITY_PREFIX_HUDONG + uri);
+
+        triplet2.setSubjectURI(ENTITY_PREFIX_WIKI + uri);
+
+        tripletList = WebServiceAccessor.query(triplet1);
+
+        //tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
+
+        //List<String> objects = subjects;
+
+        tripletList.addAll(WebServiceAccessor.query(triplet2));
+        tripletList.addAll(WebServiceAccessor.query(triplet3));
+
+        List<Triplet> ret = new ArrayList<>();
+        for (Triplet triplet : tripletList) {
+            if (!ret.contains(triplet))
+                ret.add(triplet);
+            System.out.println("Find one!==============: ");
+            System.out.println("new Triples subject: "+triplet1.getSubjectName());
+            System.out.println("new Triples predict: "+triplet1.getPredicateName());
+            System.out.println("new Triples object: "+triplet1.getObjectName());
         }
         return ret;
     }
