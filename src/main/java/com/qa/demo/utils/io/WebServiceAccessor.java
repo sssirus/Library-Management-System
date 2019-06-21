@@ -49,12 +49,12 @@ public class WebServiceAccessor {
     }
 
     private WebServiceAccessor() {
-        try {
-            tripletList = getTripletsFromNT_Triplets(FileConfig.NT_TRIPLETS);
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.error("读取文件失败！");
-        }
+//        try {
+//            tripletList = getTripletsFromNT_Triplets(FileConfig.NT_TRIPLETS);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            logger.error("读取文件失败！");
+//        }
     }
 
     private static WebServiceAccessor _getWebServiceAccessor() {
@@ -114,15 +114,17 @@ public class WebServiceAccessor {
         String filter = accessor._createFilterString("s", subjects);
         String sparql = accessor._createSparql(new Triplet(), filter);
         List<Triplet> ret = new ArrayList<>();
-        for (String subject : subjects) {
-            for (Triplet triplet : accessor.tripletList) {
-                if (triplet.getSubjectURI().contains(subject)) {
-                    ret.addAll(queryServer(new Triplet(), sparql, Repository.agriculture));
-                    break;
-                }
-            }
-        }
+//        for (String subject : subjects) {
+//            for (Triplet triplet : accessor.tripletList) {
+//                if (triplet.getSubjectURI().contains(subject)) {
+//                    ret.addAll(queryServer(new Triplet(), sparql, Repository.agriculture));
+//                    break;
+//                }
+//            }
+//        }
 
+//        // 访问 农业百科
+//        ret.addAll(queryServer(new Triplet(), sparql, Repository.agriculture));
         // 访问 zhishi_201801，需要考虑重定向与多义词
         ret.addAll(queryServer(new Triplet(), sparql, Repository.zhishi_201801));
         subjects = new LinkedList<>();
