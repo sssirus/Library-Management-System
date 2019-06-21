@@ -3,10 +3,14 @@ package com.qa.demo.questionAnalysis;
 import com.qa.demo.dataStructure.Entity;
 import com.qa.demo.dataStructure.Triplet;
 import com.qa.demo.utils.kgprocess.KGTripletsClient;
-// import javafx.util.Pair;
-// import javafx.util.Pair;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
+// import javafx.util.Pair;
+// import javafx.util.Pair;
 
 /**
  *  Created time: 2017_09_08
@@ -241,6 +245,58 @@ public class NER {
             }
         }
         return entityList;
+    }
+
+    public static void generateEntityFIle() {
+        Map<String, String> Entitymap = new HashMap<String, String>();
+
+
+
+        ArrayList<Triplet> tripletList = KGTripletsClient.getInstance().getKgTriplets();
+
+        //char[] questionCharArray = questionString.toCharArray();
+       // double alpha = 0.6, beita = 0.6;
+
+        for (Triplet t : tripletList) {
+            String sname = t.getSubjectName();
+            String uris = t.getSubjectURI();
+            if(!Entitymap.containsKey(sname))
+            {
+                if(!sname.matches("[a-zA-Z0-9]+")&&sname.length()>=3)
+
+                Entitymap.put(sname.trim(), uris);
+            }
+        }
+        //write to entities.txt
+        try {
+            File writeName = new File("/data/ylx/ylx/data/entities_row.txt"); // 相对路径，如果没有则要建立一个新的output.txt文件
+            writeName.createNewFile(); // 创建新文件,有同名的文件的话直接覆盖
+            try (FileWriter writer = new FileWriter(writeName);
+                 BufferedWriter out = new BufferedWriter(writer)
+            ) {
+
+                for (String key : Entitymap.keySet()) {
+
+                    String ss=new String(key.getBytes("utf-8"));
+                    String newstr = ss.replaceAll(" ","");
+                    newstr = newstr.replaceAll("·","");
+                    out.write(newstr+" "+Entitymap.get(key)+"\n");
+                }
+
+
+                out.flush();
+                out.close();
+
+
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return ;
+
     }
 
     /**

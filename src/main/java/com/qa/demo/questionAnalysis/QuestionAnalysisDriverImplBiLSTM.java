@@ -23,14 +23,16 @@ public class QuestionAnalysisDriverImplBiLSTM implements QuestionAnalysisDriver 
             String query=q.getQuestionString().replace("[", "(").replace("]", ")");
             q.setQuestionString(query);
         }
+
         String minLen="zheshiyigezhanweifumeiyoufeichangdadezuoyong";
         for (Entity e : q.getQuestionEntity()) {
 
         if(e.getKgEntityName().length()<minLen.length())
             minLen=e.getKgEntityName();
         }
-        String sentence =
-                q.getQuestionString().replace(minLen, " ");
+        System.out.println(minLen);
+        String sentence = q.getQuestionString().replace(minLen, " ");
+
         for (String punctuation : Configuration.PUNCTUATION_SET) {
             sentence = sentence.replace(punctuation, "");
         }
@@ -169,7 +171,10 @@ public class QuestionAnalysisDriverImplBiLSTM implements QuestionAnalysisDriver 
         //q.setQuestionEntity(AliasEntity.getAliasEntities(q.getQuestionString()));
         return q;
     }
-
+    public void generateEntityFIle() {
+        NER.generateEntityFIle();
+      return ;
+    }
     //输入一个Question类型的数据结构，对其进行模板匹配后输出；
     public Question patternExtractQuestion(Question q) {
         ArrayList<QueryTuple> tuples = PatternMatch.patternmatch(q);

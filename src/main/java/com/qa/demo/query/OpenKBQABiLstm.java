@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
+import static com.qa.demo.conf.Configuration.*;
 import static com.qa.demo.utils.w2v.Subword2Vec.calVec;
 import static com.qa.demo.utils.w2v.Subword2Vec.check_words;
 
@@ -31,25 +32,96 @@ import static com.qa.demo.utils.w2v.Subword2Vec.check_words;
 public class OpenKBQABiLstm implements KbqaQueryDriver {
     private static final Logger infologger = LoggerFactory.getLogger("queryLoggerInfo");
     private static final Logger logger = LoggerFactory.getLogger(OpenKBQA.class);
-    @Override
-    public Question kbQueryAnswers(Question q) {
+    //@Override
+    public Question kbQueryAnswers2(Question q) {
 
         //取得问题分析器驱动；
         QuestionAnalysisDriver qAnalysisDriver = new QuestionAnalysisDriverImplBiLSTM();
-        logger.info("entity");
-        q = qAnalysisDriver.nerQuestion(q);
-        logger.info("token");
+        //logger.info("entity");
+        //q = qAnalysisDriver.nerQuestion(q);
+        //logger.info("token");
+        //((QuestionAnalysisDriverImplBiLSTM) qAnalysisDriver).generateEntityFIle();
 
-        q = qAnalysisDriver.segmentationQuestion(q);
+        //logger.info("entityList.txt is generated!!!!");
+        //q = qAnalysisDriver.segmentationQuestion(q);
+
         // 得到所有以问题中实体为主语或宾语的所有相关三元组
-        ReturnedResults resultVo = SendPOSTRequest.getPredicateFromFlaskServer(q.getQuestionString());
-        String predicate = resultVo.getPredicate();
+        entityReturnedResults resultVo = SendPOSTRequest.getEntityFromFlaskServer(q.getQuestionString());
+        String entitystr = resultVo.getEntity();
+        String url = resultVo.getUrl();
+        String remain = resultVo.getRemain();
+
+        logger.info("ner:entity:");
+        logger.info(entitystr);
+        logger.info("ner:url:");
+        logger.info(url);
+        logger.info("ner:remain:");
+        logger.info(remain);
+        q.setQuestionString(remain);
+        if(url.equals("None"))
+        {
+            ArrayList<Entity> entityList = new ArrayList<>();
+
+
+            Entity e1 = new Entity();
+            String entityURL1 = ENTITY_PREFIX_BAIDU + entitystr;
+            e1.setEntityURI(entityURL1);
+            e1.setKgEntityName(entitystr);
+            entityList.add(e1);
+
+            Entity e2 = new Entity();
+            String entityURL2 = ENTITY_PREFIX_HUDONG + entitystr;
+            e2.setEntityURI(entityURL2);
+            e2.setKgEntityName(entitystr);
+            entityList.add(e2);
+
+            Entity e3 = new Entity();
+            String entityURL3 = ENTITY_PREFIX_WIKI + entitystr;
+            e3.setEntityURI(entityURL3);
+            e3.setKgEntityName(entitystr);
+            entityList.add(e3);
+
+
+            q.setQuestionEntity(entityList);
+
+
+        }
+        else
+        {
+            Entity e = new Entity();
+
+            e.setEntityURI(url);
+            e.setKgEntityName(entitystr);
+            ArrayList<Entity> entityList = new ArrayList<>();
+            entityList.add(e);
+            q.setQuestionEntity(entityList);
+        }
+
+
+        logger.info("triplets");
+        q = getCandidateTriplets(q);
+        //ArrayList<String> cadidatePredicateList = new ArrayList<>();
+        StringBuffer cadidatePredicateList = new StringBuffer();
+        for(Triplet t: q.getTripletList()){ // 问题中所有实体对应作为主语或宾语的三元组 去重
+            cadidatePredicateList.append(t.getPredicateName());
+            cadidatePredicateList.append(" ");
+        }
+        String cadidate = cadidatePredicateList.toString();
+
         System.out.println("predicate");
-        System.out.println(predicate);
-        Predicate p = new Predicate();
-        p.setKgPredicateName(predicate);
+        predicateReturnedResults presultVo = SendPOSTRequest.getPredicateFromFlaskServer(q.getQuestionString(),cadidate);
+
+        List<String> predicate = presultVo.getPredicate();
         List<Predicate> ps = new ArrayList<Predicate>();
-        ps.add(p);
+        for(int i=0;i<predicate.size();i++)
+        {
+            System.out.println(predicate.get(i));
+            Predicate p = new Predicate();
+            p.setKgPredicateName(predicate.get(i));
+
+            ps.add(p);
+        }
+
         q.setQuestionPredicate(ps);
         logger.info("triplets");
         ArrayList<QueryTuple> tuples = genenrateQueryTuple(q,predicate);
@@ -57,7 +129,141 @@ public class OpenKBQABiLstm implements KbqaQueryDriver {
         q = GetCandidateAnswers.getCandidateAnswers(q, DataSource.BiLSTM);
         return q;
     }
+    @Override
+    public Question kbQueryAnswers(Question q) {
 
+        //取得问题分析器驱动；
+        QuestionAnalysisDriver qAnalysisDriver = new QuestionAnalysisDriverImplBiLSTM();
+        //logger.info("entity");
+        //q = qAnalysisDriver.nerQuestion(q);
+        //logger.info("token");
+        //((QuestionAnalysisDriverImplBiLSTM) qAnalysisDriver).generateEntityFIle();
+
+        //logger.info("entityList.txt is generated!!!!");
+        //q = qAnalysisDriver.segmentationQuestion(q);
+
+        // 得到所有以问题中实体为主语或宾语的所有相关三元组
+        entityReturnedResults resultVo = SendPOSTRequest.getEntityFromFlaskServer(q.getQuestionString());
+        String entitystr = resultVo.getEntity();
+        String url = resultVo.getUrl();
+        String remain = resultVo.getRemain();
+
+        logger.info("ner:entity:");
+        logger.info(entitystr);
+        logger.info("ner:url:");
+        logger.info(url);
+        logger.info("ner:remain:");
+        logger.info(remain);
+        q.setQuestionString(remain);
+        if(url.equals("None"))
+        {
+            ArrayList<Entity> entityList = new ArrayList<>();
+
+
+            Entity e1 = new Entity();
+            String entityURL1 = ENTITY_PREFIX_BAIDU + entitystr;
+            e1.setEntityURI(entityURL1);
+            e1.setKgEntityName(entitystr);
+            entityList.add(e1);
+
+            Entity e2 = new Entity();
+            String entityURL2 = ENTITY_PREFIX_HUDONG + entitystr;
+            e2.setEntityURI(entityURL2);
+            e2.setKgEntityName(entitystr);
+            entityList.add(e2);
+
+            Entity e3 = new Entity();
+            String entityURL3 = ENTITY_PREFIX_WIKI + entitystr;
+            e3.setEntityURI(entityURL3);
+            e3.setKgEntityName(entitystr);
+            entityList.add(e3);
+
+
+            q.setQuestionEntity(entityList);
+
+
+        }
+        else
+        {
+            Entity e = new Entity();
+
+            e.setEntityURI(url);
+            e.setKgEntityName(entitystr);
+            ArrayList<Entity> entityList = new ArrayList<>();
+            entityList.add(e);
+            q.setQuestionEntity(entityList);
+        }
+
+
+        logger.info("triplets");
+        q = getCandidateTriplets(q);
+        Map<String,String> candidate = new HashMap();
+        //ArrayList<String> cadidatePredicateList = new ArrayList<>();
+        StringBuffer cadidatePredicateList = new StringBuffer();
+        for(Triplet t: q.getTripletList()){ // 问题中所有实体对应作为主语或宾语的三元组 去重
+            cadidatePredicateList.append(t.getPredicateName());
+            cadidatePredicateList.append(" ");
+            candidate.put(t.getPredicateName(), t.getObjectName());
+            System.out.println(t.getPredicateName());
+        }
+        String cadidate = cadidatePredicateList.toString();
+
+        System.out.println("predicate");
+        predicateReturnedResults presultVo = SendPOSTRequest.getPredicateFromFlaskServer(q.getQuestionString(),cadidate);
+
+        List<String> predicate = presultVo.getPredicate();
+        List<Predicate> ps = new ArrayList<Predicate>();
+        String theOnePredicate = new String();
+        for(int i=0;i<predicate.size();i++)
+        {
+            System.out.println(predicate.get(i));
+            Predicate p = new Predicate();
+            p.setKgPredicateName(predicate.get(i));
+            theOnePredicate = predicate.get(i);
+            ps.add(p);
+        }
+
+        q.setQuestionPredicate(ps);
+        logger.info("triplets");
+        //ArrayList<QueryTuple> tuples = genenrateQueryTuple(q,predicate);
+        //q.setQueryTuples(tuples);
+        //q = GetCandidateAnswers.getCandidateAnswers(q, DataSource.BiLSTM);
+        //ArrayList<Answer> answers = _getWebServiceCandidateAnswers(q, p);
+        ArrayList<Answer> results = new ArrayList<>();
+        Answer a = new Answer();
+        String answerStr = candidate.get(theOnePredicate);
+        a.setAnswerString(answerStr);
+        //如果没有候选答案则返回一个默认答案同时将分数置为0；
+
+        results.add(a);
+        q.setCandidateAnswer(results);
+        q.setReturnedAnswer(a);
+        return q;
+    }
+    private Question getCandidateTriplets(Question q){
+
+        Set<Triplet> set = new HashSet<>();
+        for(Entity entity: q.getQuestionEntity()){ // 问题中所有实体对应作为主语或宾语的三元组 去重
+            List<Triplet> temp  = GetCandidateAnswers.getCandidateTripletsByEntity(entity);
+            set.addAll(temp);
+        }
+
+        List<Triplet> tripletList = new ArrayList<>(set);
+
+        Iterator<Triplet> iter = tripletList.iterator();
+        while(iter.hasNext()){
+            Triplet triplet = iter.next();
+            String PredicateName = triplet.getPredicateURI().substring(triplet.getPredicateURI().lastIndexOf("/")+1);
+            if(PredicateName.equals("relatedPage") || PredicateName.equals("internalLink") || PredicateName.equals("relatedImage")
+                    || PredicateName.equals("externalLink") || PredicateName.equals("category") ){
+                iter.remove();
+            }
+        }
+
+        q.setTripletList(tripletList);
+
+        return q;
+    }
 
     // 计算相似度 根据词向量和距离
     private Question calSimilarity(Question q){
@@ -273,7 +479,7 @@ public class OpenKBQABiLstm implements KbqaQueryDriver {
         return t;
 
     }
-    private ArrayList<QueryTuple> genenrateQueryTuple(Question q,String predicatename) {
+    private ArrayList<QueryTuple> genenrateQueryTuple(Question q,List<String> predicatename) {
 
         ArrayList<QueryTuple> tuples = new ArrayList<>();
 
@@ -281,19 +487,24 @@ public class OpenKBQABiLstm implements KbqaQueryDriver {
             return tuples;
         //从问题中将实体删掉后，去匹配模板;
         for (Entity e : q.getQuestionEntity()) {
-                        Predicate p = new Predicate();
-                        p.setKgPredicateName(predicatename);
-                        QueryTuple tuple = new QueryTuple();
-                        QuestionTemplate qTemplate = new QuestionTemplate();
-                        qTemplate.setPredicate(p);
-                        qTemplate.setTemplateString(predicatename);
-                        tuple.setTemplate(qTemplate);
-                        tuple.setSubjectEntity(e);
-                        tuple.setPredicate(qTemplate.getPredicate());
+            for(String predicat:predicatename)
+            {
 
-                        tuple.setTupleScore(0.0);
+                Predicate p = new Predicate();
+                p.setKgPredicateName(predicat);
+                QueryTuple tuple = new QueryTuple();
+                QuestionTemplate qTemplate = new QuestionTemplate();
+                qTemplate.setPredicate(p);
+                qTemplate.setTemplateString(predicat);
+                tuple.setTemplate(qTemplate);
+                tuple.setSubjectEntity(e);
+                tuple.setPredicate(qTemplate.getPredicate());
 
-                        tuples.add(tuple); }
+                tuple.setTupleScore(0.0);
+
+                tuples.add(tuple);
+            }
+        }
 
         return tuples;
     }

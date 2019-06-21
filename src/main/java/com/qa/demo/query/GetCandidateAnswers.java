@@ -228,20 +228,28 @@ public class GetCandidateAnswers {
     public static List<Triplet> getCandidateTripletsByEntity(Entity entity) {
 
         String uri = entity.getEntityURI();
+        System.out.println("=============================");
+        //System.out.println(uri);
         Triplet triplet = new Triplet();
         uri = uri.substring(uri.lastIndexOf('/') + 1);
 
-
+        //System.out.println("next:"+uri);
         List<Triplet> tripletList;
 
         List<String> subjects = new ArrayList<>();
         subjects.add(uri);
+        System.out.println(uri);
         subjects.add(ENTITY_PREFIX_BAIDU + uri);
+        System.out.println(ENTITY_PREFIX_BAIDU + uri);
         subjects.add(ENTITY_PREFIX + uri);
+        System.out.println(ENTITY_PREFIX + uri);
         subjects.add(ENTITY_PREFIX_CAAS + uri);
+        System.out.println(ENTITY_PREFIX_CAAS + uri);
         subjects.add(ENTITY_PREFIX_HUDONG + uri);
+        System.out.println(ENTITY_PREFIX_HUDONG + uri);
         subjects.add(ENTITY_PREFIX_WIKI + uri);
-
+        System.out.println(ENTITY_PREFIX_WIKI + uri);
+        System.out.println("=============================");
         tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
 
         List<String> objects = subjects;
@@ -252,6 +260,10 @@ public class GetCandidateAnswers {
         for (Triplet triplet1 : tripletList) {
             if (!ret.contains(triplet1))
                 ret.add(triplet1);
+            //System.out.println("Find one!==============: ");
+            //System.out.println("new Triples subject: "+triplet1.getSubjectName());
+            //System.out.println("new Triples predict: "+triplet1.getPredicateName());
+            //System.out.println("new Triples object: "+triplet1.getObjectName());
         }
         return ret;
     }

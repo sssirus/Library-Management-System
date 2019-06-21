@@ -4,7 +4,6 @@ import com.qa.demo.answerAnalysis.AnswerAnalysisDriverImpl;
 import com.qa.demo.conf.Configuration;
 import com.qa.demo.dataStructure.Question;
 import com.qa.demo.query.KbqaQueryDriver;
-import com.qa.demo.query.OpenKBQA;
 import com.qa.demo.query.OpenKBQABiLstm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +33,8 @@ public class MainController {
         return "index";
     }
 
-    @RequestMapping(value = "/question", method = RequestMethod.POST)
-    public String IndexSearch(@RequestParam("question") String questionstring, Model model) throws IOException
+    @RequestMapping(value = "/question2", method = RequestMethod.POST)
+    public String IndexSearch2(@RequestParam("question2") String questionstring, Model model) throws IOException
     {
 
         System.out.println("aaaa");
@@ -61,7 +60,7 @@ public class MainController {
 
         // 对答案进行排序
         AnswerAnalysisDriverImpl analysisDriver = new AnswerAnalysisDriverImpl();
-        q = analysisDriver.rankAnswerCandidate(q);
+        //q = analysisDriver.rankAnswerCandidate(q);
 
         //生成答案并返回
         q = analysisDriver.returnAnswer(q);
@@ -72,11 +71,12 @@ public class MainController {
 
         return "result";
     }
-    @RequestMapping(value = "/question2", method = RequestMethod.POST)
-    public String IndexSearch2(@RequestParam("question2") String questionstring, Model model) throws IOException
+    @RequestMapping(value = "/question", method = RequestMethod.POST)
+    public String IndexSearch(@RequestParam("question") String questionstring, Model model) throws IOException
     {
 
-        System.out.println("bbbb");
+
+        System.out.println("aaaa");
         infologger.info("[info] 用户输入的问题为： " +questionstring);
         Scanner scanner = new Scanner(questionstring);
 
@@ -92,17 +92,17 @@ public class MainController {
         }
         Question q = new Question(input);
         q.setQuestionString(qstring);
-        KbqaQueryDriver OpenKBQADriver = new OpenKBQA();
+        KbqaQueryDriver OpenKBQADriver = new OpenKBQABiLstm();
         q = OpenKBQADriver.kbQueryAnswers(q);
 
 
 
         // 对答案进行排序
-        AnswerAnalysisDriverImpl analysisDriver = new AnswerAnalysisDriverImpl();
-        q = analysisDriver.rankAnswerCandidate(q);
+        //AnswerAnalysisDriverImpl analysisDriver = new AnswerAnalysisDriverImpl();
+        //q = analysisDriver.rankAnswerCandidate(q);
 
         //生成答案并返回
-        q = analysisDriver.returnAnswer(q);
+        //q = analysisDriver.returnAnswer(q);
 
         System.out.println(q.getReturnedAnswer().getAnswerString().trim());
         model.addAttribute("answer",q.getReturnedAnswer().getAnswerString().trim());
