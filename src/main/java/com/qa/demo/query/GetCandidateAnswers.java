@@ -301,7 +301,7 @@ public class GetCandidateAnswers {
 
         triplet2.setSubjectURI(ENTITY_PREFIX_HUDONG + uri);
 
-        triplet2.setSubjectURI(ENTITY_PREFIX_WIKI + uri);
+        triplet3.setSubjectURI(ENTITY_PREFIX_WIKI + uri);
 
         tripletList = WebServiceAccessor.query(triplet1);
 
@@ -317,9 +317,9 @@ public class GetCandidateAnswers {
             if (!ret.contains(triplet))
                 ret.add(triplet);
             System.out.println("Find one!==============: ");
-            System.out.println("new Triples subject: "+triplet1.getSubjectName());
-            System.out.println("new Triples predict: "+triplet1.getPredicateName());
-            System.out.println("new Triples object: "+triplet1.getObjectName());
+            System.out.println("new Triples subject: "+triplet.getSubjectName());
+            System.out.println("new Triples predict: "+triplet.getPredicateName());
+            System.out.println("new Triples object: "+triplet.getObjectName());
         }
         return ret;
     }
