@@ -30,7 +30,7 @@ import static com.qa.demo.utils.io.WebServiceTool._decode_unicode;
 import static java.lang.Thread.sleep;
 
 /**
- * 说明：
+ * 说明：2222
  * 在通过WebServiceAccessor访问服务器端的数据时
  * 默认为主语和谓语uri添加<>
  * 为宾语uri添加""

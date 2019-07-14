@@ -1,7 +1,5 @@
 package com.qa.demo.dataStructure;
 
-import java.util.ArrayList;
-
 /**
  * @author: Seven.wk
  * @description: 数据返回类
@@ -11,25 +9,33 @@ public class predicateReturnedResults {
 
   
 
-    private ArrayList<String> predicate;
-
+    private String predicate;
+    private Double score;
 
 
     public predicateReturnedResults() {
     }
 
-    public predicateReturnedResults(ArrayList<String> predicate) {
+    public predicateReturnedResults(String predicate,String score) {
         this.predicate = predicate;
+        this.score = Double.parseDouble(score);
 
     }
 
 
 
-    public ArrayList<String> getPredicate() {
+    public String getPredicate() {
         return predicate;
     }
 
-    public void setPredicate(ArrayList<String> predicate) {
+    public void setScore(Double score) {
+        this.score = score;
+    }
+    public Double getScore() {
+        return score;
+    }
+
+    public void setPredicate(String predicate) {
         this.predicate = predicate;
     }
 

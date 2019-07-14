@@ -17,7 +17,7 @@ class WebServiceAccessorTest {
 //         subjects.add("苹果");
 //        subjects.add("中国");
 //         triplet.setSubjectURI("中国");
-        triplet.setSubjectURI("http://zhishi.me/hudongbaike/resource/苹果");
+        triplet.setSubjectURI("http://zhishi.me/hudongbaike/resource/文化学园大学");
 
 //        triplet.setObjectURI("中国");
         // subjects.add("http://zhishi.me/hudongbaike/resource/CW400");
