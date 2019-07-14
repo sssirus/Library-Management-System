@@ -6,6 +6,8 @@ import com.qa.demo.utils.io.WebServiceAccessor;
 import com.qa.demo.utils.kgprocess.KGTripletsClient;
 import com.qa.demo.utils.nt_triple.AG;
 
+import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -261,9 +263,9 @@ public class GetCandidateAnswers {
             if (!ret.contains(triplet1))
                 ret.add(triplet1);
             //System.out.println("Find one!==============: ");
-            //System.out.println("new Triples subject: "+triplet1.getSubjectName());
-            //System.out.println("new Triples predict: "+triplet1.getPredicateName());
-            //System.out.println("new Triples object: "+triplet1.getObjectName());
+            //System.out.println("new Triples subject: "+triplet1.getSubjectURI());
+            //System.out.println("new Triples predict: "+triplet1.getPredicateURI());
+            //System.out.println("new Triples object: "+triplet1.getPredicateURI());
         }
         return ret;
     }
@@ -282,45 +284,57 @@ public class GetCandidateAnswers {
      * @return 以 entity 为主语或宾语的候选三元组
      */
     public static List<Triplet> getCandidateTripletsByEntityWithoutURL(Entity entity) {
-
-        String uri = entity.getEntityURI();
-        System.out.println("=============================");
-        //System.out.println(uri);
-        Triplet triplet1 = new Triplet();
-        Triplet triplet2 = new Triplet();
-        Triplet triplet3 = new Triplet();
-        uri = uri.substring(uri.lastIndexOf('/') + 1);
-
-        //System.out.println("next:"+uri);
-        List<Triplet> tripletList;
-
-
-
-
-        triplet1.setSubjectURI(ENTITY_PREFIX_BAIDU + uri);
-
-        triplet2.setSubjectURI(ENTITY_PREFIX_HUDONG + uri);
-
-        triplet3.setSubjectURI(ENTITY_PREFIX_WIKI + uri);
-
-        tripletList = WebServiceAccessor.query(triplet1);
-
-        //tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
-
-        //List<String> objects = subjects;
-
-        tripletList.addAll(WebServiceAccessor.query(triplet2));
-        tripletList.addAll(WebServiceAccessor.query(triplet3));
-
         List<Triplet> ret = new ArrayList<>();
-        for (Triplet triplet : tripletList) {
-            if (!ret.contains(triplet))
-                ret.add(triplet);
-            System.out.println("Find one!==============: ");
-            System.out.println("new Triples subject: "+triplet.getSubjectName());
-            System.out.println("new Triples predict: "+triplet.getPredicateName());
-            System.out.println("new Triples object: "+triplet.getObjectName());
+        try{
+            String uri = URLDecoder.decode(entity.getEntityURI(),"UTF-8");
+
+        System.out.println("=============================");
+            //System.out.println(uri);
+            List<String> subjects = new ArrayList<>();
+             uri = uri.substring(uri.lastIndexOf('/') + 1);
+
+            String subject1=ENTITY_PREFIX_BAIDU + uri;
+            subjects.add(subject1);
+            //triplet1.setSubjectURI(subject1);
+            //System.out.println(triplet1.getSubjectURI());
+
+            String subject2=ENTITY_PREFIX_HUDONG + uri;
+            subjects.add(subject2);
+
+            String subject3=ENTITY_PREFIX_WIKI + uri;
+            subjects.add(subject3);
+
+            List<Triplet> tripletList;
+
+
+            tripletList = WebServiceAccessor.queryByMultiSubjects(subjects);
+
+            List<String> objects = subjects;
+
+            tripletList.addAll(WebServiceAccessor.queryByMultiObjects(objects));
+
+
+
+            for (Triplet triplet : tripletList) {
+                if (!ret.contains(triplet)&&!(triplet.getSubjectURI().equals("null")))
+                {
+                    ret.add(triplet);
+                    //System.out.println("Find one!==============: ");
+                    //System.out.println("new Triples subject: "+triplet.getSubjectURI());
+                    //System.out.println("new Triples predict: "+triplet.getPredicateURI());
+                    //System.out.println("new Triples object: "+triplet.getObjectURI());
+                }
+
+            }
+
         }
+        catch (IOException e)
+        {
+
+        }
+
+
+
         return ret;
     }
 

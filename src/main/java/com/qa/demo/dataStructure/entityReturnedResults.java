@@ -1,41 +1,43 @@
 package com.qa.demo.dataStructure;
 
-public class entityReturnedResults {
-    private String remain;
+import java.util.List;
 
-    private String entity ;
-    private String url ;
+public class entityReturnedResults {
+    private List<String> remain;
+
+    private List<String> entity ;
+    private List<String> url ;
 
     public entityReturnedResults() {
     }
 
-    public entityReturnedResults(String entity, String url, String remain) {
+    public entityReturnedResults(List<String> entity, List<String> url, List<String> remain) {
         this.remain = remain;
         this.entity = entity;
         this.url = url;
     }
 
 
-    public String getEntity() {
+    public List<String> getEntity() {
         return entity;
     }
 
-    public void setEntity(String entity) {
+    public void setEntity(List<String> entity) {
         this.entity = entity;
     }
 
-    public String getRemain() {
+    public List<String> getRemain() {
         return remain;
     }
 
-    public void setRemain(String remain) {
+    public void setRemain(List<String> remain) {
         this.remain = remain;
     }
-    public String getUrl() {
+    public List<String> getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(List<String> url) {
         this.url = url;
     }
 }
